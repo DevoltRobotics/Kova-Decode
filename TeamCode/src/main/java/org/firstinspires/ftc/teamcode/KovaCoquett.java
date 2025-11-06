@@ -67,12 +67,12 @@ public class KovaCoquett extends OpMode {
                 gamepad1.left_stick_y,
                 gamepad1.left_stick_x,
                 gamepad1.right_stick_x,
-                true
+                false
         );
 
         detectaBolas.enableLed(true);
 
-        boolean hayBola = detectaBolas.getDistance(DistanceUnit.MM) < 50;
+        boolean hayBola = detectaBolas.getDistance(DistanceUnit.MM) < 40;
 
         if (habiaBola == null) {
             habiaBola = hayBola;
@@ -94,7 +94,7 @@ public class KovaCoquett extends OpMode {
             }
 
             // Después de 2.5s, se empuja la ultima bola hacia el shooter con el servo
-            if (shooterFlickTimer.seconds() >= 2.5) {
+            if (shooterFlickTimer.seconds() >= 2.5 || gamepad1.right_bumper) {
                 subeBolas.setPosition(0.8);
             }
 
