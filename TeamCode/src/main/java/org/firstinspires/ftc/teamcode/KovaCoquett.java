@@ -94,7 +94,7 @@ public class KovaCoquett extends OpMode {
             }
 
             // Después de 2.5s, se empuja la ultima bola hacia el shooter con el servo
-            if (shooterFlickTimer.seconds() >= 2.5 || gamepad1.right_bumper) {
+            if (gamepad1.right_bumper) {
                 subeBolas.setPosition(0.8);
             }
 
@@ -162,6 +162,7 @@ public class KovaCoquett extends OpMode {
         telemetry.addData("Hay bola", hayBola);
         telemetry.addData("Sube bolas", subeBolas.getPosition());
         telemetry.addData("Para bolas", paraBolas.getPosition());
+        telemetry.addData("angulo", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.update();
 
         // Actualiza estado anterior
