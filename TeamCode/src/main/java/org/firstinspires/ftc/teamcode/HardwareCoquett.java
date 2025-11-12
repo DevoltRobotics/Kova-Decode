@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -11,8 +12,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
+import org.firstinspires.ftc.teamcode.subsystem.Turret;
 
 public class HardwareCoquett {
 
@@ -36,8 +39,20 @@ public class HardwareCoquett {
     public Limelight3A limelight;
 
     public Shooter shooter = new Shooter(this);
+    public Turret turret = new Turret(this);
+
+    public final Telemetry panelsTelem = PanelsTelemetry.INSTANCE.getFtcTelemetry();
+
+    public final Alliance alliance;
+
+    public LLResult llResult = null;
+
+    public HardwareCoquett(Alliance alliance) {
+        this.alliance = alliance;
+    }
 
     public void init(HardwareMap hardwareMap) {
+
         // Inicializa el seguidor de trayectorias
         follower = Constants.createFollower(hardwareMap);
 
@@ -56,14 +71,55 @@ public class HardwareCoquett {
 
         // Sensor
         detectaBolas = hardwareMap.get(RevColorSensorV3.class, "detectaBolas");
-        detectaBolas.enableLed(true);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        limelight.start();
+        limelight.setPollRateHz(60);
+
+        limelight.pipelineSwitch(0);
     }
 
     public void update() {
-        shooter.update();
+        llResult = limelight.getLatestResult();
 
-        limelight.getLatestResult().getTa();
+        shooter.update();
+        turret.update();
+
+        panelsTelem.addData("LL isValid", llResult.isValid());
+        panelsTelem.addData("LL tA", getAllianceTA());
+        panelsTelem.addData("LL tX", getAllianceTX());
+
+        panelsTelem.update();
+    }
+
+
+    public Double getAllianceTA() {
+        if (llResult != null && llResult.isValid() && !llResult.getFiducialResults().isEmpty()) {
+            int id = llResult.getFiducialResults().get(0).getFiducialId();
+
+            if (alliance == Alliance.ANY ||
+                    (alliance == Alliance.RED && id == 24) ||
+                    (alliance == Alliance.BLUE && id == 20)) {
+                return llResult.getTa();
+            }
+        }
+
+        return null;
+    }
+
+
+    public Double getAllianceTX() {
+        if (llResult != null && llResult.isValid() && !llResult.getFiducialResults().isEmpty()) {
+            int id = llResult.getFiducialResults().get(0).getFiducialId();
+
+            if (alliance == Alliance.ANY ||
+                    (alliance == Alliance.RED && id == 24) ||
+                    (alliance == Alliance.BLUE && id == 20)) {
+                return llResult.getTx();
+            }
+        }
+
+        return null;
     }
 }

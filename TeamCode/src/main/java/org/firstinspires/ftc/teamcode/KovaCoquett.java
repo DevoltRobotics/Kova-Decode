@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @TeleOp(name = "TragabolasCoquette 😍😍❤️❤️")
 public class KovaCoquett extends OpMode {
 
-    private final HardwareCoquett robot = new HardwareCoquett();
+    private final HardwareCoquett robot = new HardwareCoquett(Alliance.ANY);
 
     private final ElapsedTime intakeRollbackTimer = new ElapsedTime();
     private final ElapsedTime intakeShootRollbackTimer = new ElapsedTime();
@@ -84,14 +84,26 @@ public class KovaCoquett extends OpMode {
         robot.tragaBolasMotor.setPower(tragaBolasPower);
 
         // --- SHOOTER ---
-        if (gamepad1.left_trigger >= 0.1) {
+        if (gamepad1.left_trigger >= 0.3) {
             robot.shooter.shooterTargetVelocity = 1500;
+
+            robot.shooter.aimingLimelight = false;
+            robot.turret.aimingLimelight = false;
+        } else if(gamepad1.right_trigger >= 0.3) {
+            robot.shooter.aimingLimelight = true;
+            robot.turret.aimingLimelight = true;
         } else {
-            robot.escupeBolasMotor.setPower(0);
-            robot.disparadorMotor.setPower(0);
+            robot.shooter.aimingLimelight = false;
+            robot.turret.aimingLimelight = false;
+
+            robot.shooter.shooterTargetVelocity = 0;
         }
 
-        robot.shooter.aimingLimelight = true;
+        if(gamepad1.y || gamepad2.y) {
+            robot.turret.aimingLimelight = true;
+        } else if(gamepad1.right_trigger < 0.3) {
+            robot.turret.aimingLimelight = false;
+        }
 
         // --- TORRETA ---
         robot.torrettCoquette.setPower(gamepad2.left_stick_x);
