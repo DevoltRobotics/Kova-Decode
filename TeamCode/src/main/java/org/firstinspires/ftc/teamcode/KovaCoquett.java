@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -29,11 +30,15 @@ public class KovaCoquett extends OpMode {
     @Override
     public void loop() {
         robot.follower.setTeleOpDrive(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
+                gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                gamepad1.right_stick_x,
                 false
         );
+
+        if(gamepad1.dpadUpWasPressed()) {
+            robot.follower.setPose(new Pose());
+        }
 
         boolean hayBola = robot.detectaBolas.getDistance(DistanceUnit.MM) < 40;
 
@@ -58,11 +63,14 @@ public class KovaCoquett extends OpMode {
                 tragaBolasPower = -1;
             }
 
+            if(shooterFlickTimer.seconds() > 3) {
+                robot.subeBolas.setPosition(0.8);
+            }
         } else if (gamepad2.b) {
             tragaBolasPower = 1;
         } else if (gamepad2.a) {
             tragaBolasPower = -1;
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad2.right_bumper) {
             robot.subeBolas.setPosition(0.8);
         } else {
             robot.subeBolas.setPosition(0);
@@ -89,6 +97,13 @@ public class KovaCoquett extends OpMode {
 
             robot.shooter.aimingLimelight = false;
             robot.turret.aimingLimelight = false;
+
+        } else if(gamepad1.left_bumper) {
+            robot.shooter.shooterTargetVelocity = -1500;
+
+            robot.shooter.aimingLimelight = false;
+            robot.turret.aimingLimelight = false;
+
         } else if(gamepad1.right_trigger >= 0.3) {
             robot.shooter.aimingLimelight = true;
             robot.turret.aimingLimelight = true;
@@ -99,14 +114,13 @@ public class KovaCoquett extends OpMode {
             robot.shooter.shooterTargetVelocity = 0;
         }
 
-        if(gamepad1.y || gamepad2.y) {
+        // --- TORRETA ---
+        if(gamepad1.y || gamepad2.right_trigger >= 0.3) {
             robot.turret.aimingLimelight = true;
         } else if(gamepad1.right_trigger < 0.3) {
             robot.turret.aimingLimelight = false;
+            robot.torrettCoquette.setPower(-gamepad2.left_stick_x);
         }
-
-        // --- TORRETA ---
-        robot.torrettCoquette.setPower(gamepad2.left_stick_x);
 
         robot.follower.update();
 
