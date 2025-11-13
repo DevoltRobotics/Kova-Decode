@@ -19,7 +19,7 @@ public class Shooter {
         lut.add(0.42, 1400);
         lut.add(0.72, 1250);
         lut.add(3.2, 1050);
-        lut.add(5, 1100);
+        lut.add(6, 1100);
 
         lut.createLUT();
     }

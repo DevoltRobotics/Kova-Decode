@@ -12,15 +12,15 @@ public class Turret {
     HardwareCoquett robot;
 
     public static PIDFCoefficients llTurretCoeffs = new PIDFCoefficients(
-            0.014, 0, 0, 0
+            0.012, 0, 0, 0
     );
 
-    public static double minPower = 0.02;
+    public static double minPower = 0.04;
     public static double llTolerance = 0.1;
 
     // --- Nuevo: Filtro exponencial ---
     // Cuanto menor sea alpha, más suave el movimiento (0.1–0.3 recomendable)
-    public static double filterAlpha = 0.2;
+    public static double filterAlpha = 0.8;
     private double filteredOutput = 0.0;
 
     PIDFController llTurretController = new PIDFController(llTurretCoeffs);

@@ -58,12 +58,12 @@ public class KovaCoquett extends OpMode {
             if (gamepad1.right_bumper) robot.subeBolas.setPosition(0.8);
 
             if (intakeShootRollbackTimer.seconds() < 0.2) {
-                tragaBolasPower = 0.6;
+                tragaBolasPower = 0.4;
             } else {
                 tragaBolasPower = -1;
             }
 
-            if(shooterFlickTimer.seconds() > 3) {
+            if(shooterFlickTimer.seconds() >= 3) {
                 robot.subeBolas.setPosition(0.8);
             }
         } else if (gamepad2.b) {
