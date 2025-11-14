@@ -29,6 +29,7 @@ public class HardwareCoquett {
     public CRServo torrettCoquette;
     public Servo subeBolas;
     public Servo paraBolas;
+    public Servo light;
 
     // Sensor de color / distancia
     public RevColorSensorV3 detectaBolas;
@@ -68,6 +69,7 @@ public class HardwareCoquett {
         torrettCoquette = hardwareMap.get(CRServo.class, "torreta");
         subeBolas = hardwareMap.get(Servo.class, "subeBolas");
         paraBolas = hardwareMap.get(Servo.class, "paraBolas");
+        light = hardwareMap.get(Servo.class, "light");
 
         // Sensor
         detectaBolas = hardwareMap.get(RevColorSensorV3.class, "detectaBolas");

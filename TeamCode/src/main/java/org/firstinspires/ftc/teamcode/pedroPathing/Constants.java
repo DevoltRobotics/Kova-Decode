@@ -18,11 +18,9 @@ public class Constants {
             .mass(14)
             .forwardZeroPowerAcceleration(-64.157514)
             .lateralZeroPowerAcceleration(-81.122738)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.18, 0, 0.009, 0))
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.01,0.015))
-            .useSecondaryDrivePIDF(true)
-            .useSecondaryHeadingPIDF(true)
-            .useSecondaryTranslationalPIDF(true);
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.02,0))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.85,0,0.08,0.01));
+
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -33,10 +31,10 @@ public class Constants {
             .yVelocity(71.21749)
             .xVelocity(56.54314)
             .leftFrontMotorName("lf")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE);
+            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(0)
             .strafePodX(0)
@@ -48,9 +46,9 @@ public class Constants {
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
-                .pathConstraints(pathConstraints)
                 .mecanumDrivetrain(driveConstants)
                 .pinpointLocalizer(localizerConstants)
+                .pathConstraints(pathConstraints)
                 .build();
     }
 }

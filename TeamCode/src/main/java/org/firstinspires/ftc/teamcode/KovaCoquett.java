@@ -3,19 +3,23 @@ package org.firstinspires.ftc.teamcode;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name = "TragabolasCoquette 😍😍❤️❤️")
-public class KovaCoquett extends OpMode {
+public abstract class KovaCoquett extends OpMode {
 
-    private final HardwareCoquett robot = new HardwareCoquett(Alliance.ANY);
+    private final HardwareCoquett robot;
 
     private final ElapsedTime intakeRollbackTimer = new ElapsedTime();
     private final ElapsedTime intakeShootRollbackTimer = new ElapsedTime();
     private final ElapsedTime shooterFlickTimer = new ElapsedTime();
     private Boolean habiaBola = null;
+
+    public KovaCoquett(Alliance alliance) {
+        robot = new HardwareCoquett(alliance);
+    }
 
     @Override
     public void init() {
@@ -29,12 +33,25 @@ public class KovaCoquett extends OpMode {
 
     @Override
     public void loop() {
-        robot.follower.setTeleOpDrive(
-                gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x,
-                false
-        );
+        if(!gamepad1.b){
+            robot.follower.setTeleOpDrive(
+                    gamepad1.left_stick_y*0.5,
+                    gamepad1.left_stick_x *0.5,
+                    gamepad1.right_stick_x *0.5,
+                    false
+            );
+            telemetry.addData("Modo lento: ", "Activado");
+            robot.light.setPosition(0.277);
+        }else {
+            robot.follower.setTeleOpDrive(
+                    gamepad1.left_stick_y,
+                    gamepad1.left_stick_x,
+                    gamepad1.right_stick_x,
+                    false
+            );
+            robot.light.setPosition(0.5);
+            telemetry.addData("Modo lento: ", "Desactivado");
+        }
 
         if(gamepad1.dpadUpWasPressed()) {
             robot.follower.setPose(new Pose());

@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @Configurable
-@TeleOp
+@Autonomous(group = "ZZZZ")
 public class ShooterTestCoquett extends OpMode {
 
     public static double shooterTarget = 0;
