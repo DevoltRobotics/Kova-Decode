@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.teamcode.Alliance;
 import org.firstinspires.ftc.teamcode.HardwareCoquett;
 
 @Configurable
@@ -36,7 +37,11 @@ public class Turret {
             if (robot.getAllianceTX() != null) {
                 // Define el setpoint del Limelight
                 if (robot.getAllianceTA() <= 0.4) {
-                    llTurretController.setSetPoint(3);
+                    if(robot.alliance == Alliance.BLUE) {
+                        llTurretController.setSetPoint(3);
+                    } else {
+                        llTurretController.setSetPoint(-3);
+                    }
                 } else {
                     llTurretController.setSetPoint(0);
                 }

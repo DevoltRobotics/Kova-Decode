@@ -93,6 +93,8 @@ public class HardwareCoquett {
         panelsTelem.addData("LL tX", getAllianceTX());
 
         panelsTelem.update();
+
+        follower.update();
     }
 
 

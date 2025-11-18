@@ -35,18 +35,18 @@ public abstract class KovaCoquett extends OpMode {
     public void loop() {
         if(!gamepad1.b){
             robot.follower.setTeleOpDrive(
-                    gamepad1.left_stick_y*0.5,
-                    gamepad1.left_stick_x *0.5,
-                    gamepad1.right_stick_x *0.5,
+                    -gamepad1.left_stick_y*0.5,
+                    -gamepad1.left_stick_x *0.5,
+                    -gamepad1.right_stick_x *0.5,
                     false
             );
             telemetry.addData("Modo lento: ", "Activado");
             robot.light.setPosition(0.277);
         }else {
             robot.follower.setTeleOpDrive(
-                    gamepad1.left_stick_y,
-                    gamepad1.left_stick_x,
-                    gamepad1.right_stick_x,
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
                     false
             );
             robot.light.setPosition(0.5);
@@ -94,7 +94,7 @@ public abstract class KovaCoquett extends OpMode {
         }
 
         // --- BLOQUEO AUTOMÁTICO DE BOLAS ---
-        if (!gamepad1.a) {
+        if (!gamepad1.a || !gamepad1.left_bumper) {
             if (hayBola && !gamepad2.b) {
                 robot.paraBolas.setPosition(0.5);
                 if (hayBola != habiaBola) intakeRollbackTimer.reset();
@@ -121,6 +121,7 @@ public abstract class KovaCoquett extends OpMode {
             robot.shooter.aimingLimelight = false;
             robot.turret.aimingLimelight = false;
 
+            robot.paraBolas.setPosition(1);
         } else if(gamepad1.right_trigger >= 0.3) {
             robot.shooter.aimingLimelight = true;
             robot.turret.aimingLimelight = true;
@@ -138,8 +139,6 @@ public abstract class KovaCoquett extends OpMode {
             robot.turret.aimingLimelight = false;
             robot.torrettCoquette.setPower(-gamepad2.left_stick_x);
         }
-
-        robot.follower.update();
 
         robot.update();
 
