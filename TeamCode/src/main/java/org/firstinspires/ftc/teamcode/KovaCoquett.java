@@ -140,6 +140,20 @@ public abstract class KovaCoquett extends OpMode {
             robot.torrettCoquette.setPower(-gamepad2.left_stick_x);
         }
 
+        // -- LIBRO/SUBEBAJA --
+
+        if(robot.subiBajaMotor.getCurrentPosition() < 600 && robot.subiBajaMotor.getCurrentPosition() > 0) {
+            if(gamepad2.dpad_up) {
+                robot.subiBajaMotor.setPower(0.5);
+            }else if (gamepad2.dpad_down) {
+                robot.subiBajaMotor.setPower(-0.5);
+            }else {
+                robot.subiBajaMotor.setPower(0);
+            }
+        }else {
+            robot.subiBajaMotor.setPower(0);
+        }
+
         robot.update();
 
         // --- TELEMETRÍA ---
