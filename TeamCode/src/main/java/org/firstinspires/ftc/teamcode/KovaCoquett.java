@@ -132,6 +132,18 @@ public abstract class KovaCoquett extends OpMode {
             robot.subiBajaMotor.setPower(0.0);
         }
 
+        if(gamepad1.a){
+            robot.subeBolas.setPower(0.8);
+        }else {
+            robot.subeBolas.setPower(0);
+        }
+
+        if (gamepad1.dpad_right){
+            robot.asistencia.setPosition(1);
+        }else if (gamepad1.dpad_left){
+            robot.asistencia.setPosition(0.3);
+        }
+
         // ------------------- ROBOT -------------------
         robot.update();
 
@@ -151,6 +163,13 @@ public abstract class KovaCoquett extends OpMode {
         telemetry.addData("Sube bolas", intake.getIndexerPosition());
         telemetry.addData("Para bolas", intake.getGatePosition());
         telemetry.addData("Ángulo", Math.toDegrees(robot.follower.getPose().getHeading()));
+        boolean stateHigh = robot.laserInput.getState();
+        boolean detected = stateHigh;
+        if (detected) {
+            telemetry.addLine("Pelote detectada");
+        } else {
+            telemetry.addLine("No hay pelota wuawua :(");
+        }
         telemetry.update();
     }
 

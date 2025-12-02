@@ -25,7 +25,7 @@ public class Shooter {
     }
 
     public static PIDFCoefficients shooterCoeffs = new PIDFCoefficients(
-      0.01, 0, 0, 0
+            0.01, 0, 0, 0
     );
 
     public static double kA = 0.0007;

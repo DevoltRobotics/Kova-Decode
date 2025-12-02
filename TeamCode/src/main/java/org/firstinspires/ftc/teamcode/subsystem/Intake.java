@@ -41,7 +41,7 @@ public class Intake {
 
         double intakePower = 0.0;
         double paraBolasPos = robot.paraBolas.getPosition();
-        double subeBolasPos = robot.subeBolas.getPosition();
+        double subeBolasPos = robot.subeBolas.getPower();
 
         // --- AUTO SHOOT (gamepad1.a) ---
         if (cmd.autoShoot) {
@@ -54,29 +54,18 @@ public class Intake {
                 shooterFlickTimer.reset();
             }
 
-            if (cmd.autoShootFeedOverride) {
-                subeBolasPos = 0.8;
-            }
-
             if (intakeShootRollbackTimer.seconds() < 0.2) {
                 intakePower = 0.4;
             } else {
                 intakePower = -1.0;
             }
 
-            if (shooterFlickTimer.seconds() >= 3.0) {
-                subeBolasPos = 0.8;
-            }
         }
         // --- MANUAL INTAKE / INDEXER (gamepad2) ---
         else if (cmd.manualIntakeForward) {
             intakePower = 1.0;
         } else if (cmd.manualIntakeReverse) {
             intakePower = -1.0;
-        } else if (cmd.manualIndexerUp) {
-            subeBolasPos = 0.8;
-        } else {
-            subeBolasPos = 0.0;
         }
 
         // --- AUTO BALL BLOCKING ---
@@ -103,7 +92,6 @@ public class Intake {
 
         robot.tragaBolasMotor.setPower(intakePower);
         robot.paraBolas.setPosition(paraBolasPos);
-        robot.subeBolas.setPosition(subeBolasPos);
 
         previousHasBall = hasBall;
     }
@@ -123,11 +111,11 @@ public class Intake {
     }
 
     public void indexerUp() {
-        robot.subeBolas.setPosition(0.8);
+        robot.subeBolas.setPower(0.8);
     }
 
     public void indexerDown() {
-        robot.subeBolas.setPosition(0.0);
+        robot.subeBolas.setPower(0.0);
     }
 
     public void openGate() {
@@ -143,7 +131,7 @@ public class Intake {
     }
 
     public double getIndexerPosition() {
-        return robot.subeBolas.getPosition();
+        return robot.subeBolas.getPower();
     }
 
     public double getGatePosition() {

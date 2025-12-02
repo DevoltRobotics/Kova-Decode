@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -28,9 +29,11 @@ public class HardwareCoquett {
 
     // Servos
     public CRServo torrettCoquette;
-    public Servo subeBolas;
+    public CRServo subeBolas;
     public Servo paraBolas;
     public Servo light;
+    public Servo asistencia;
+    public DigitalChannel laserInput;;
 
     // Sensor de color / distancia
     public RevColorSensorV3 detectaBolas;
@@ -63,16 +66,22 @@ public class HardwareCoquett {
 
         escupeBolasMotor = hardwareMap.get(DcMotorEx.class, "shooter");
         disparadorMotor = hardwareMap.get(DcMotorEx.class, "disparador");
+        laserInput = hardwareMap.get(DigitalChannel.class, "laser");
+        laserInput.setMode(DigitalChannel.Mode.INPUT);
 
         disparadorMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         subiBajaMotor=hardwareMap.get(DcMotor.class, "subibaja");
 
+
         // Servos
         torrettCoquette = hardwareMap.get(CRServo.class, "torreta");
-        subeBolas = hardwareMap.get(Servo.class, "subeBolas");
+        subeBolas = hardwareMap.get(CRServo.class, "subeBolas");
         paraBolas = hardwareMap.get(Servo.class, "paraBolas");
+        asistencia = hardwareMap.get(Servo.class, "asistencia");
         light = hardwareMap.get(Servo.class, "light");
+
+
 
         // Sensor
         detectaBolas = hardwareMap.get(RevColorSensorV3.class, "detectaBolas");
