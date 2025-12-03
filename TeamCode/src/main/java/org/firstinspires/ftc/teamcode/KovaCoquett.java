@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
@@ -23,6 +24,8 @@ public abstract class KovaCoquett extends OpMode {
     private static final int COLOR_MIN_BRIGHTNESS = 80;
     private static final double COLOR_DOMINANT_RATIO = 1.4;
     private static final double RGB_CYCLE_PERIOD = 4.0;
+    boolean asisted;
+    private final ElapsedTime asistedTimer = new ElapsedTime();
 
     private final ElapsedTime rgbCycleTimer = new ElapsedTime();
 
@@ -53,6 +56,8 @@ public abstract class KovaCoquett extends OpMode {
 
     @Override
     public void loop() {
+        boolean stateHigh = robot.laserInput.getState();
+        boolean detected = stateHigh;
         // ------------------- DRIVE -------------------
         if (!gamepad1.b) {
             robot.follower.setTeleOpDrive(
@@ -80,7 +85,7 @@ public abstract class KovaCoquett extends OpMode {
 
         // ------------------- INTAKE  -------------------
         Intake.Command intakeCmd = intake.newCommand();
-
+//lolllll
         intakeCmd.autoShoot             = gamepad1.a;
         intakeCmd.autoShootJustPressed  = gamepad1.aWasPressed();
         intakeCmd.autoShootFeedOverride = gamepad1.right_bumper;
@@ -91,6 +96,29 @@ public abstract class KovaCoquett extends OpMode {
         intakeCmd.shooterClearing = gamepad1.left_bumper;
 
         intake.update(intakeCmd);
+
+        if(gamepad1.right_trigger>=0.3){
+            robot.paraBolas.setPosition(1);
+        } else if (gamepad2.a) {
+            robot.paraBolas.setPosition(0);
+            robot.asistencia.setPosition(0.5);
+            asisted = false;
+        }
+
+
+        if(gamepad1.dpad_right) {
+            robot.asistencia.setPosition(1);
+            asistedTimer.reset();
+            asisted = true;
+        }
+        if(asisted && asistedTimer.seconds() > 2.5){
+            robot.asistencia.setPosition(0.5);
+            asisted = false;
+        }
+        if(gamepad1.dpad_left){
+            robot.asistencia.setPosition(0.5);
+            asisted = false;
+        }
 
         // ------------------- SHOOTER -------------------
         if (gamepad1.left_trigger >= 0.3) {
@@ -127,7 +155,7 @@ public abstract class KovaCoquett extends OpMode {
         if (gamepad2.dpad_up) {
             robot.subiBajaMotor.setPower(0.5);
         } else if (gamepad2.dpad_down) {
-            robot.subiBajaMotor.setPower(-0.25);
+            robot.subiBajaMotor.setPower(-1.0);
         } else {
             robot.subiBajaMotor.setPower(0.0);
         }
@@ -138,11 +166,8 @@ public abstract class KovaCoquett extends OpMode {
             robot.subeBolas.setPower(0);
         }
 
-        if (gamepad1.dpad_right){
-            robot.asistencia.setPosition(1);
-        }else if (gamepad1.dpad_left){
-            robot.asistencia.setPosition(0.3);
-        }
+        gamepad1.setLedColor(222,49,99,10000);
+        gamepad2.setLedColor(222,49,99,10000);
 
         // ------------------- ROBOT -------------------
         robot.update();
@@ -163,10 +188,10 @@ public abstract class KovaCoquett extends OpMode {
         telemetry.addData("Sube bolas", intake.getIndexerPosition());
         telemetry.addData("Para bolas", intake.getGatePosition());
         telemetry.addData("Ángulo", Math.toDegrees(robot.follower.getPose().getHeading()));
-        boolean stateHigh = robot.laserInput.getState();
-        boolean detected = stateHigh;
+        telemetry.addData("Asisted", asisted);
+
         if (detected) {
-            telemetry.addLine("Pelote detectada");
+            telemetry.addLine("Pelota detectada");
         } else {
             telemetry.addLine("No hay pelota wuawua :(");
         }
