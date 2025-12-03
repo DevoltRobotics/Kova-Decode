@@ -87,6 +87,7 @@ public class HardwareCoquett {
         detectaBolas = hardwareMap.get(RevColorSensorV3.class, "detectaBolas");
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        asistencia.setDirection(Servo.Direction.REVERSE);
 
         limelight.start();
         limelight.setPollRateHz(60);

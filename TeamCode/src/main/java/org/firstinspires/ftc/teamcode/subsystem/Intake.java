@@ -45,7 +45,6 @@ public class Intake {
 
         // --- AUTO SHOOT (gamepad1.a) ---
         if (cmd.autoShoot) {
-            paraBolasPos = 1.0;
 
             if (cmd.autoShootJustPressed) {
                 if (hasBall) {
@@ -71,8 +70,6 @@ public class Intake {
         // --- AUTO BALL BLOCKING ---
         if (cmd.autoBlockEnabled && !cmd.shooterClearing) {
             if (hasBall && !cmd.manualIntakeForward) {
-                paraBolasPos = 0.5;
-
                 if (hasBall != previousHasBall) {
                     intakeRollbackTimer.reset();
                 }
@@ -81,17 +78,10 @@ public class Intake {
                 if (t > 0.5 && t < 0.8) {
                     intakePower = 0.6;
                 }
-            } else {
-                paraBolasPos = 1.0;
             }
         }
 
-        if (cmd.shooterClearing) {
-            paraBolasPos = 1.0;
-        }
-
         robot.tragaBolasMotor.setPower(intakePower);
-        robot.paraBolas.setPosition(paraBolasPos);
 
         previousHasBall = hasBall;
     }
