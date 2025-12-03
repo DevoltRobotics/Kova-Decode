@@ -85,7 +85,7 @@ public abstract class KovaCoquett extends OpMode {
 
         // ------------------- INTAKE  -------------------
         Intake.Command intakeCmd = intake.newCommand();
-
+//lolllll
         intakeCmd.autoShoot             = gamepad1.a;
         intakeCmd.autoShootJustPressed  = gamepad1.aWasPressed();
         intakeCmd.autoShootFeedOverride = gamepad1.right_bumper;
