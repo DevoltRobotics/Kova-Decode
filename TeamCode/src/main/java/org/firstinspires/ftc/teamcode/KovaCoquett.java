@@ -14,20 +14,9 @@ public abstract class KovaCoquett extends OpMode {
     protected final Intake intake;
 
     private static final double RGB_OFF    = 0.0;
-    private static final double RGB_RED    = 0.277;
-    private static final double RGB_GREEN  = 0.500;
-    private static final double RGB_VIOLET = 0.722;
-    private static final double RGB_WHITE  = 1.0;
     private static final double RGB_PINK = 0.85;
-    private static final double RGB_SPEC_MIN = RGB_RED;    // 0.277
-    private static final double RGB_SPEC_MAX = RGB_VIOLET; // 0.722
-    private static final int COLOR_MIN_BRIGHTNESS = 80;
-    private static final double COLOR_DOMINANT_RATIO = 1.4;
-    private static final double RGB_CYCLE_PERIOD = 4.0;
     boolean asisted;
     private final ElapsedTime asistedTimer = new ElapsedTime();
-
-    private final ElapsedTime rgbCycleTimer = new ElapsedTime();
 
     // --------------------------------------------------------------
 
@@ -39,9 +28,6 @@ public abstract class KovaCoquett extends OpMode {
     @Override
     public void init() {
         robot.init(hardwareMap);
-
-        rgbCycleTimer.reset();
-
         // Show pink while in INIT
         if (robot.light != null) {
             robot.light.setPosition(RGB_PINK);
@@ -51,7 +37,6 @@ public abstract class KovaCoquett extends OpMode {
     @Override
     public void start() {
         robot.follower.startTeleOpDrive(true);
-        rgbCycleTimer.reset();
     }
 
     @Override
@@ -85,7 +70,6 @@ public abstract class KovaCoquett extends OpMode {
 
         // ------------------- INTAKE  -------------------
         Intake.Command intakeCmd = intake.newCommand();
-//lolllll
         intakeCmd.autoShoot             = gamepad1.a;
         intakeCmd.autoShootJustPressed  = gamepad1.aWasPressed();
         intakeCmd.autoShootFeedOverride = gamepad1.right_bumper;
@@ -105,7 +89,7 @@ public abstract class KovaCoquett extends OpMode {
             asisted = false;
         }
 
-
+        if(){
         if(gamepad1.dpad_right) {
             robot.asistencia.setPosition(1);
             asistedTimer.reset();
@@ -171,15 +155,6 @@ public abstract class KovaCoquett extends OpMode {
 
         // ------------------- ROBOT -------------------
         robot.update();
-
-        // ------------------- COLOR SENSOR + RGB INDICATOR -------------------
-        int red   = robot.detectaBolas.red();
-        int green = robot.detectaBolas.green();
-        int blue  = robot.detectaBolas.blue();
-
-        boolean hayBola = intake.hasBall();
-        updateRgbIndicator(hayBola, red, green, blue);
-
         // ------------------- TELEMETRY -------------------
         telemetry.addData("Bolas rojas", red);
         telemetry.addData("Bolas verdes", green);
@@ -189,45 +164,10 @@ public abstract class KovaCoquett extends OpMode {
         telemetry.addData("Para bolas", intake.getGatePosition());
         telemetry.addData("Ángulo", Math.toDegrees(robot.follower.getPose().getHeading()));
         telemetry.addData("Asisted", asisted);
-
-        if (detected) {
-            telemetry.addLine("Pelota detectada");
-        } else {
-            telemetry.addLine("No hay pelota wuawua :(");
-        }
+        telemtry.addData("Laser", detected)
+        
         telemetry.update();
     }
 
-    private void updateRgbIndicator(boolean hayBola, int r, int g, int b) {
-        if (robot.light == null) return;
 
-        int sum = r + g + b;
-        boolean brightEnough = sum >= COLOR_MIN_BRIGHTNESS;
-
-        boolean isGreen = brightEnough &&
-                g > r * COLOR_DOMINANT_RATIO &&
-                g > b * COLOR_DOMINANT_RATIO;
-
-        boolean isPurple = brightEnough &&
-                r > g * COLOR_DOMINANT_RATIO &&
-                b > g * COLOR_DOMINANT_RATIO;
-
-        if (hayBola && isGreen) {
-            robot.light.setPosition(RGB_GREEN);
-        } else if (hayBola && isPurple) {
-            robot.light.setPosition(RGB_VIOLET);
-        } else {
-            updateRgbSpectrum();
-        }
-    }
-
-    private void updateRgbSpectrum() {
-        double t = rgbCycleTimer.seconds();
-        double phase = (t % RGB_CYCLE_PERIOD) / RGB_CYCLE_PERIOD; // 0..1
-
-        // Sweep linearly from red to violet
-        double pos = RGB_SPEC_MIN + phase * (RGB_SPEC_MAX - RGB_SPEC_MIN);
-
-        robot.light.setPosition(pos);
-    }
 }
