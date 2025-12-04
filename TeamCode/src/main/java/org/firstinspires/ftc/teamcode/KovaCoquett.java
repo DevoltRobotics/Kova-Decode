@@ -89,7 +89,6 @@ public abstract class KovaCoquett extends OpMode {
             asisted = false;
         }
 
-        if(){
         if(gamepad1.dpad_right) {
             robot.asistencia.setPosition(1);
             asistedTimer.reset();
@@ -156,16 +155,11 @@ public abstract class KovaCoquett extends OpMode {
         // ------------------- ROBOT -------------------
         robot.update();
         // ------------------- TELEMETRY -------------------
-        telemetry.addData("Bolas rojas", red);
-        telemetry.addData("Bolas verdes", green);
-        telemetry.addData("Bolas azules", blue);
-        telemetry.addData("Hay bola", hayBola);
         telemetry.addData("Sube bolas", intake.getIndexerPosition());
         telemetry.addData("Para bolas", intake.getGatePosition());
         telemetry.addData("Ángulo", Math.toDegrees(robot.follower.getPose().getHeading()));
         telemetry.addData("Asisted", asisted);
-        telemtry.addData("Laser", detected)
-        
+
         telemetry.update();
     }
 
