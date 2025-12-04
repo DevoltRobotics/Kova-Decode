@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
@@ -81,10 +80,23 @@ public abstract class KovaCoquett extends OpMode {
 
         intake.update(intakeCmd);
 
-        if(gamepad1.right_trigger>=0.3){
-            robot.paraBolas.setPosition(1);
-        } else if (gamepad2.a) {
-            robot.paraBolas.setPosition(0);
+        if(gamepad1.a) {
+            robot.ballStop.setPosition(0.3);
+        } else if (gamepad1.left_bumper) {
+            robot.ballStop.setPosition(0.3);
+        }else {
+            robot.ballStop.setPosition(0);
+        }
+
+        if(gamepad2.a) {
+            robot.noStuck.setPower(1);
+        } else if (gamepad2.b) {
+            robot.noStuck.setPower(-1);
+        }else {
+            robot.noStuck.setPower(0);
+        }
+
+        if (gamepad2.a) {
             robot.asistencia.setPosition(0.5);
             asisted = false;
         }
@@ -94,7 +106,7 @@ public abstract class KovaCoquett extends OpMode {
             asistedTimer.reset();
             asisted = true;
         }
-        if(asisted && asistedTimer.seconds() > 2.5){
+        if(asisted && asistedTimer.seconds() > 0.5){
             robot.asistencia.setPosition(0.5);
             asisted = false;
         }
@@ -134,6 +146,7 @@ public abstract class KovaCoquett extends OpMode {
             robot.torrettCoquette.setPower(-gamepad2.left_stick_x);
         }
 
+
         // ------------------- LIFT (LIBRO / SUBEBAJA) -------------------
         if (gamepad2.dpad_up) {
             robot.subiBajaMotor.setPower(0.5);
@@ -144,9 +157,9 @@ public abstract class KovaCoquett extends OpMode {
         }
 
         if(gamepad1.a){
-            robot.subeBolas.setPower(0.8);
+            robot.ballUp.setPower(0.8);
         }else {
-            robot.subeBolas.setPower(0);
+            robot.ballUp.setPower(0);
         }
 
         gamepad1.setLedColor(222,49,99,10000);

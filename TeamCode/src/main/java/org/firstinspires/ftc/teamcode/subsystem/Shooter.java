@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.panels.Panels;
-import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
@@ -52,12 +50,12 @@ public class Shooter {
         shooterController.setTolerance(20);
         shooterController.setSetPoint(shooterTargetVelocity);
 
-        double currentVelocity = -robot.escupeBolasMotor.getVelocity();
+        double currentVelocity = -robot.shooterMotor.getVelocity();
 
         double power = (kA * shooterTargetVelocity) + shooterController.calculate(currentVelocity);
 
         robot.disparadorMotor.setPower(power);
-        robot.escupeBolasMotor.setPower(power);
+        robot.shooterMotor.setPower(power);
 
         robot.panelsTelem.addData("shooter current velocity", currentVelocity);
         robot.panelsTelem.addData("shooter target velocity", shooterTargetVelocity);

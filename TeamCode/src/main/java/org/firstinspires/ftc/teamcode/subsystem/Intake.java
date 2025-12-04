@@ -40,12 +40,11 @@ public class Intake {
         }
 
         double intakePower = 0.0;
-        double paraBolasPos = robot.paraBolas.getPosition();
-        double subeBolasPos = robot.subeBolas.getPower();
+        double paraBolasPos = robot.ballStop.getPosition();
+        double subeBolasPos = robot.ballUp.getPower();
 
         // --- AUTO SHOOT (gamepad1.a) ---
         if (cmd.autoShoot) {
-
             if (cmd.autoShootJustPressed) {
                 if (hasBall) {
                     intakeShootRollbackTimer.reset();
@@ -81,7 +80,7 @@ public class Intake {
             }
         }
 
-        robot.tragaBolasMotor.setPower(intakePower);
+        robot.intake.setPower(intakePower);
 
         previousHasBall = hasBall;
     }
@@ -89,42 +88,42 @@ public class Intake {
     // ------------- Auto Methods -------------
 
     public void intakeIn() {
-        robot.tragaBolasMotor.setPower(1.0);
+        robot.intake.setPower(1.0);
     }
 
     public void intakeOut() {
-        robot.tragaBolasMotor.setPower(-1.0);
+        robot.intake.setPower(-1.0);
     }
 
     public void stopIntake() {
-        robot.tragaBolasMotor.setPower(0.0);
+        robot.intake.setPower(0.0);
     }
 
     public void indexerUp() {
-        robot.subeBolas.setPower(0.8);
+        robot.ballUp.setPower(0.8);
     }
 
     public void indexerDown() {
-        robot.subeBolas.setPower(0.0);
+        robot.ballUp.setPower(0.0);
     }
 
     public void openGate() {
-        robot.paraBolas.setPosition(1.0);
+        robot.ballStop.setPosition(1.0);
     }
 
     public void blockGate() {
-        robot.paraBolas.setPosition(0.5);
+        robot.ballStop.setPosition(0.5);
     }
 
     public boolean hasBall() {
-        return robot.detectaBolas.getDistance(DistanceUnit.MM) < 40;
+        return robot.colorSensor.getDistance(DistanceUnit.MM) < 40;
     }
 
     public double getIndexerPosition() {
-        return robot.subeBolas.getPower();
+        return robot.ballUp.getPower();
     }
 
     public double getGatePosition() {
-        return robot.paraBolas.getPosition();
+        return robot.ballStop.getPosition();
     }
 }

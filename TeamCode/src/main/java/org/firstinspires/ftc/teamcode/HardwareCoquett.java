@@ -21,22 +21,23 @@ import org.firstinspires.ftc.teamcode.subsystem.Turret;
 public class HardwareCoquett {
 
     // Motores principales
-    public DcMotor tragaBolasMotor;
+    public DcMotor intake;
 
-    public DcMotorEx escupeBolasMotor;
+    public DcMotorEx shooterMotor;
     public DcMotorEx disparadorMotor;
     public DcMotor subiBajaMotor;
 
     // Servos
     public CRServo torrettCoquette;
-    public CRServo subeBolas;
-    public Servo paraBolas;
+    public CRServo ballUp;
+    public CRServo noStuck;
+    public Servo ballStop;
     public Servo light;
     public Servo asistencia;
     public DigitalChannel laserInput;;
 
     // Sensor de color / distancia
-    public RevColorSensorV3 detectaBolas;
+    public RevColorSensorV3 colorSensor;
 
     // Follower para manejo de movimiento
     public Follower follower;
@@ -62,9 +63,9 @@ public class HardwareCoquett {
         follower = Constants.createFollower(hardwareMap);
 
         // Motores
-        tragaBolasMotor = hardwareMap.get(DcMotor.class, "intake");
+        intake = hardwareMap.get(DcMotor.class, "intake");
 
-        escupeBolasMotor = hardwareMap.get(DcMotorEx.class, "shooter");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");
         disparadorMotor = hardwareMap.get(DcMotorEx.class, "disparador");
         laserInput = hardwareMap.get(DigitalChannel.class, "laser");
         laserInput.setMode(DigitalChannel.Mode.INPUT);
@@ -76,15 +77,16 @@ public class HardwareCoquett {
 
         // Servos
         torrettCoquette = hardwareMap.get(CRServo.class, "torreta");
-        subeBolas = hardwareMap.get(CRServo.class, "subeBolas");
-        paraBolas = hardwareMap.get(Servo.class, "paraBolas");
+        ballUp = hardwareMap.get(CRServo.class, "subeBolas");
+        ballStop = hardwareMap.get(Servo.class, "paraBolas");
         asistencia = hardwareMap.get(Servo.class, "asistencia");
+        noStuck = hardwareMap.get(CRServo.class, "stuck");
         light = hardwareMap.get(Servo.class, "light");
 
 
 
         // Sensor
-        detectaBolas = hardwareMap.get(RevColorSensorV3.class, "detectaBolas");
+        colorSensor = hardwareMap.get(RevColorSensorV3.class, "detectaBolas");
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         asistencia.setDirection(Servo.Direction.REVERSE);
