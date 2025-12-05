@@ -100,7 +100,7 @@ public abstract class KovaCoquett extends OpMode {
             robot.asistencia.setPosition(0.5);
             asisted = false;
         }
-//loll
+
         if(gamepad1.dpad_right) {
             robot.asistencia.setPosition(1);
             asistedTimer.reset();
