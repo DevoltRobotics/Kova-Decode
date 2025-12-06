@@ -13,7 +13,7 @@ public class Shooter {
     static InterpLUT lut = new InterpLUT();
     static {
         lut.add(0, 1650);
-        lut.add(0.25, 1550);
+        lut.add(0.25, 1500);
         lut.add(0.42, 1400);
         lut.add(0.72, 1250);
         lut.add(3.2, 1050);

@@ -180,9 +180,6 @@ public abstract class KovaCoquett extends OpMode {
             robot.ballUp.setPower(0);
         }
 
-        gamepad1.setLedColor(222,49,99,10000);
-        gamepad2.setLedColor(222,49,99,10000);
-
         // ------------------- ROBOT -------------------
         robot.update();
         // ------------------- TELEMETRY -------------------

@@ -9,6 +9,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alliance;
 import org.firstinspires.ftc.teamcode.HardwareCoquett;
@@ -22,7 +23,6 @@ public class AutonomousGlobal extends OpMode {
     protected final HardwareCoquett robot;
     protected final Intake intake;
     protected final Alliance alliance;
-    public Follower follower;
     private int pathState;
     private Paths paths;
 
@@ -34,6 +34,9 @@ public class AutonomousGlobal extends OpMode {
     public static PathChain GrabGPP;
     public static PathChain ShootGPP;
     public static PathChain LeavePos;
+    boolean initPathStarted = false;
+    private final ElapsedTime autoTime = new ElapsedTime();
+
 
     public AutonomousGlobal(Alliance alliance) {
         this.alliance = alliance;
@@ -42,32 +45,54 @@ public class AutonomousGlobal extends OpMode {
     }
 
     @Override
+    public void init_loop() {
+        robot.update();
+        robot.turret.aimingLimelight  = true;
+        if (!initPathStarted) {
+            robot.follower.followPath(InitPos);
+            initPathStarted = true;
+        }
+
+        panelsTelemetry.debug("Init Path Running", robot.follower.isBusy());
+        panelsTelemetry.update(telemetry);
+    }
+
+
+    @Override
+    public void start() {
+        // When PLAY is pressed, skip the InitPos step
+        pathState = 0;
+        autoTime.reset();
+    }
+
+    @Override
     public void init() {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
-        follower = Constants.createFollower(hardwareMap);
+        robot.init(hardwareMap);
+        robot.follower.setMaxPower(0.8);
 
         if (alliance == Alliance.RED) {
-            follower.setStartingPose(new Pose(56, 8, Math.toRadians(90)));
+            robot.follower.setStartingPose(new Pose(56, 8, Math.toRadians(90)));
         } else {
-            follower.setStartingPose(new Pose(88, 8, Math.toRadians(90)));
+            robot.follower.setStartingPose(new Pose(88, 8, Math.toRadians(90)));
         }
 
-        paths = new Paths(follower, alliance);
-        pathState = 0;
+        paths = new Paths(robot.follower, alliance);
+        pathState = -1;
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
     }
 
     @Override
     public void loop() {
-        follower.update();
+        robot.update();
         pathState = autonomousPathUpdate();
 
         panelsTelemetry.debug("Path State", pathState);
-        panelsTelemetry.debug("X", follower.getPose().getX());
-        panelsTelemetry.debug("Y", follower.getPose().getY());
-        panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+        panelsTelemetry.debug("X", robot.follower.getPose().getX());
+        panelsTelemetry.debug("Y", robot.follower.getPose().getY());
+        panelsTelemetry.debug("Heading", robot.follower.getPose().getHeading());
         panelsTelemetry.update(telemetry);
     }
 
@@ -84,7 +109,7 @@ public class AutonomousGlobal extends OpMode {
 
                 GrabPPG = follower
                         .pathBuilder()
-                        .addPath(new BezierCurve(new Pose(61.000, 24.000), new Pose(63.000, 37.000), new Pose(13.000, 35.000)))
+                        .addPath(new BezierCurve(new Pose(61.000, 22.000), new Pose(63.000, 37.000), new Pose(13.000, 35.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(180))
                         .build();
 
@@ -134,7 +159,7 @@ public class AutonomousGlobal extends OpMode {
 
                 GrabPPG = follower
                         .pathBuilder()
-                        .addPath(new BezierCurve(new Pose(84.500, 24.000), new Pose(80.000, 37.000), new Pose(130.000, 35.000)))
+                        .addPath(new BezierCurve(new Pose(84.500, 22.000), new Pose(80.000, 37.000), new Pose(130.000, 35.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(0))
                         .build();
 
@@ -180,68 +205,72 @@ public class AutonomousGlobal extends OpMode {
     public int autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(InitPos);
-                setPathState(1);
+                robot.shooter.aimingLimelight = true;
+                if(autoTime.seconds() >= 2.5){
+                    robot.ballUp.setPower(0.8);
+                    robot.intake.setPower(-1);
+                    if(autoTime.seconds()>=4){
+                        robot.asistencia.setPosition(1);
+                    }
+                }
                 break;
-
             case 1:
-                if (!follower.isBusy()) {
-                    follower.followPath(GrabPPG, true);
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(GrabPPG, true);
                     setPathState(2);
                 }
                 break;
 
             case 2:
-                if (!follower.isBusy()) {
-                    follower.followPath(ShootPPG, true);
+                robot.intake.setPower(-1);
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(ShootPPG, true);
                     setPathState(3);
                 }
                 break;
 
             case 3:
-                if (!follower.isBusy()) {
-                    follower.followPath(GrabPGP, true);
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(GrabPGP, true);
                     setPathState(4);
                 }
                 break;
 
             case 4:
-                if (!follower.isBusy()) {
-                    follower.followPath(ShootPGP, true);
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(ShootPGP, true);
                     setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy()) {
-                    follower.followPath(GrabGPP, true);
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(GrabGPP, true);
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (!follower.isBusy()) {
-                    follower.followPath(ShootGPP, true);
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(ShootGPP, true);
                     setPathState(7);
                 }
                 break;
 
             case 7:
-                if (!follower.isBusy()) {
-                    follower.followPath(LeavePos, true);
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(LeavePos, true);
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if (!follower.isBusy()) {
+                if (!robot.follower.isBusy()) {
                     setPathState(-1);
                 }
                 break;
-
-            default:
-                break;
         }
+
         return pathState;
     }
 
