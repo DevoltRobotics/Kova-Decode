@@ -15,7 +15,10 @@ public abstract class KovaCoquett extends OpMode {
     private static final double RGB_OFF    = 0.0;
     private static final double RGB_PINK = 0.85;
     boolean asisted;
+    boolean asistedDown;
+    boolean closed;
     private final ElapsedTime asistedTimer = new ElapsedTime();
+    private final ElapsedTime closedTimer = new ElapsedTime();
 
     // --------------------------------------------------------------
 
@@ -66,6 +69,11 @@ public abstract class KovaCoquett extends OpMode {
         if (gamepad1.dpadUpWasPressed()) {
             robot.follower.setPose(new Pose());
         }
+        if(robot.asistencia.getPosition()== 1){
+            robot.light.setPosition(0.722);
+        } else if (robot.asistencia.getPosition()==0.5) {
+            robot.light.setPosition(0.5);
+        }
 
         // ------------------- INTAKE  -------------------
         Intake.Command intakeCmd = intake.newCommand();
@@ -82,10 +90,17 @@ public abstract class KovaCoquett extends OpMode {
 
         if(gamepad1.a) {
             robot.ballStop.setPosition(0.3);
-        } else if (gamepad1.left_bumper) {
+            closedTimer.reset();
+            closed = false;
+        }
+        if (gamepad1.left_bumper) {
             robot.ballStop.setPosition(0.3);
-        }else {
+            closedTimer.reset();
+            closed = false;
+        }
+        if (!closed && asistedDown && closedTimer.seconds() > 1.0){
             robot.ballStop.setPosition(0);
+            closed = true;
         }
 
         if(gamepad2.a) {
@@ -105,14 +120,17 @@ public abstract class KovaCoquett extends OpMode {
             robot.asistencia.setPosition(1);
             asistedTimer.reset();
             asisted = true;
+            asistedDown = false;
         }
-        if(asisted && asistedTimer.seconds() > 0.5){
+        if(asisted && asistedTimer.seconds() > 0.25){
             robot.asistencia.setPosition(0.5);
             asisted = false;
+            asistedDown = true;
         }
         if(gamepad1.dpad_left){
-            robot.asistencia.setPosition(0.5);
+            robot.asistencia.setPosition(1);
             asisted = false;
+            asistedDown = true;
         }
 
         // ------------------- SHOOTER -------------------

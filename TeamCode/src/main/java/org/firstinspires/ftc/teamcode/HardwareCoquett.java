@@ -4,7 +4,6 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -34,10 +33,7 @@ public class HardwareCoquett {
     public Servo ballStop;
     public Servo light;
     public Servo asistencia;
-    public DigitalChannel laserInput;;
-
-    // Sensor de color / distancia
-    public RevColorSensorV3 colorSensor;
+    public DigitalChannel laserInput;
 
     // Follower para manejo de movimiento
     public Follower follower;
@@ -86,8 +82,6 @@ public class HardwareCoquett {
 
 
         // Sensor
-        colorSensor = hardwareMap.get(RevColorSensorV3.class, "detectaBolas");
-
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         asistencia.setDirection(Servo.Direction.REVERSE);
 

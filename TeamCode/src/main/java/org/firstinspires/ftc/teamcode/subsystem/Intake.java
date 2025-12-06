@@ -67,7 +67,7 @@ public class Intake {
         }
 
         // --- AUTO BALL BLOCKING ---
-        if (cmd.autoBlockEnabled && !cmd.shooterClearing) {
+        /*if (cmd.autoBlockEnabled && !cmd.shooterClearing) {
             if (hasBall && !cmd.manualIntakeForward) {
                 if (hasBall != previousHasBall) {
                     intakeRollbackTimer.reset();
@@ -78,7 +78,7 @@ public class Intake {
                     intakePower = 0.6;
                 }
             }
-        }
+        }*/
 
         robot.intake.setPower(intakePower);
 
@@ -116,7 +116,7 @@ public class Intake {
     }
 
     public boolean hasBall() {
-        return robot.colorSensor.getDistance(DistanceUnit.MM) < 40;
+        return robot.laserInput.getState();
     }
 
     public double getIndexerPosition() {
