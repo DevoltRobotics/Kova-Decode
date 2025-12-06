@@ -88,18 +88,19 @@ public abstract class KovaCoquett extends OpMode {
 
         intake.update(intakeCmd);
 
-        if(gamepad1.a) {
+        if (gamepad1.a) {
             robot.ballStop.setPosition(0.3);
-            closedTimer.reset();
             closed = false;
-        }
-        if (gamepad1.left_bumper) {
+            closedTimer.reset();
+        }else if (gamepad1.left_bumper) {
             robot.ballStop.setPosition(0.3);
-            closedTimer.reset();
             closed = false;
-        }
-        if (!closed && asistedDown && closedTimer.seconds() > 1.0){
-            robot.ballStop.setPosition(0);
+            closedTimer.reset();
+        }else if (gamepad2.a) {
+            robot.ballStop.setPosition(0.1);
+            closed = true;
+        }else if (!closed && asistedDown && closedTimer.seconds() > 0.5) {
+            robot.ballStop.setPosition(0.1);
             closed = true;
         }
 
