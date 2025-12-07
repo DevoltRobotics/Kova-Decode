@@ -43,7 +43,7 @@ public class Intake {
         double paraBolasPos = robot.ballStop.getPosition();
         double subeBolasPos = robot.ballUp.getPower();
 
-        // --- AUTO SHOOT (gamepad1.a) ---
+        // --- AUTO SHOOT (gamepad2.a) ---
         if (cmd.autoShoot) {
             if (cmd.autoShootJustPressed) {
                 if (hasBall) {

@@ -77,26 +77,26 @@ public abstract class KovaCoquett extends OpMode {
 
         // ------------------- INTAKE  -------------------
         Intake.Command intakeCmd = intake.newCommand();
-        intakeCmd.autoShoot             = gamepad1.a;
-        intakeCmd.autoShootJustPressed  = gamepad1.aWasPressed();
-        intakeCmd.autoShootFeedOverride = gamepad1.right_bumper;
-        intakeCmd.manualIntakeForward = gamepad2.b;
-        intakeCmd.manualIntakeReverse = gamepad2.a;
-        intakeCmd.manualIndexerUp     = gamepad2.right_bumper;
-        intakeCmd.autoBlockEnabled = (!gamepad1.a || !gamepad1.left_bumper);
+        intakeCmd.autoShoot             = gamepad2.a;
+        intakeCmd.autoShootJustPressed  = gamepad2.aWasPressed();
+        intakeCmd.autoShootFeedOverride = gamepad2.right_bumper;
+        intakeCmd.manualIntakeForward = gamepad1.b;
+        intakeCmd.manualIntakeReverse = gamepad1.a;
+        intakeCmd.manualIndexerUp     = gamepad2.dpad_up;
+        intakeCmd.autoBlockEnabled = (!gamepad2.x || !gamepad2.left_bumper);
         intakeCmd.shooterClearing = gamepad1.left_bumper;
 
         intake.update(intakeCmd);
 
-        if (gamepad1.a) {
+        if (gamepad2.a) {
             robot.ballStop.setPosition(0.3);
             closed = false;
             closedTimer.reset();
-        }else if (gamepad1.left_bumper) {
+        }else if (gamepad2.left_bumper) {
             robot.ballStop.setPosition(0.3);
             closed = false;
             closedTimer.reset();
-        }else if (gamepad2.a) {
+        }else if (gamepad1.a) {
             robot.ballStop.setPosition(0.1);
             closed = true;
         }else if (!closed && asistedDown && closedTimer.seconds() > 0.5) {
@@ -104,9 +104,9 @@ public abstract class KovaCoquett extends OpMode {
             closed = true;
         }
 
-        if(gamepad2.a) {
+        if(gamepad1.a) {
             robot.noStuck.setPower(1);
-        } else if (gamepad2.b) {
+        } else if (gamepad1.b) {
             robot.noStuck.setPower(-1);
         }else {
             robot.noStuck.setPower(0);
@@ -117,7 +117,7 @@ public abstract class KovaCoquett extends OpMode {
             asisted = false;
         }
 
-        if(gamepad1.dpad_right) {
+        if(gamepad2.dpad_right) {
             robot.asistencia.setPosition(1);
             asistedTimer.reset();
             asisted = true;
@@ -128,26 +128,32 @@ public abstract class KovaCoquett extends OpMode {
             asisted = false;
             asistedDown = true;
         }
-        if(gamepad1.dpad_left){
+        if(gamepad2.dpad_left){
             robot.asistencia.setPosition(1);
             asisted = false;
             asistedDown = true;
         }
 
+        if(gamepad2.a){
+            robot.ballUp.setPower(0.8);
+        }else {
+            robot.ballUp.setPower(0);
+        }
+
         // ------------------- SHOOTER -------------------
-        if (gamepad1.left_trigger >= 0.3) {
+        if (gamepad2.left_trigger >= 0.3) {
             robot.shooter.shooterTargetVelocity = 1500;
 
             robot.shooter.aimingLimelight = false;
             robot.turret.aimingLimelight  = false;
 
-        } else if (gamepad1.left_bumper) {
+        } else if (gamepad2.left_bumper) {
             robot.shooter.shooterTargetVelocity = -1500;
 
             robot.shooter.aimingLimelight = false;
             robot.turret.aimingLimelight  = false;
 
-        } else if (gamepad1.right_trigger >= 0.3) {
+        } else if (gamepad2.right_trigger >= 0.3) {
             robot.shooter.aimingLimelight = true;
             robot.turret.aimingLimelight  = true;
         } else {
@@ -158,27 +164,21 @@ public abstract class KovaCoquett extends OpMode {
         }
 
         // ------------------- TURRET -------------------
-        if (gamepad1.y || gamepad2.right_trigger >= 0.3) {
+        if (gamepad1.y) {
             robot.turret.aimingLimelight = true;
-        } else if (gamepad1.right_trigger < 0.3) {
+        } else if (gamepad2.right_trigger < 0.3) {
             robot.turret.aimingLimelight = false;
             robot.torrettCoquette.setPower(-gamepad2.left_stick_x);
         }
 
 
         // ------------------- LIFT (LIBRO / SUBEBAJA) -------------------
-        if (gamepad2.dpad_up) {
+        if (gamepad1.dpad_up) {
             robot.subiBajaMotor.setPower(0.5);
-        } else if (gamepad2.dpad_down) {
+        } else if (gamepad1.dpad_down) {
             robot.subiBajaMotor.setPower(-1.0);
         } else {
             robot.subiBajaMotor.setPower(0.0);
-        }
-
-        if(gamepad1.a){
-            robot.ballUp.setPower(0.8);
-        }else {
-            robot.ballUp.setPower(0);
         }
 
         // ------------------- ROBOT -------------------
