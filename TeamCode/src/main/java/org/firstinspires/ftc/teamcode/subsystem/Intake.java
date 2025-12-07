@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import org.firstinspires.ftc.teamcode.HardwareCoquett;
 public class Intake {
 
@@ -52,8 +52,10 @@ public class Intake {
                 shooterFlickTimer.reset();
             }
 
+
+
             if (intakeShootRollbackTimer.seconds() < 0.2) {
-                intakePower = 0.4;
+                intakePower = -0.4;
             } else {
                 intakePower = -1.0;
             }
@@ -80,7 +82,7 @@ public class Intake {
             }
         }*/
 
-        robot.intake.setPower(intakePower);
+        robot.intakeMotor.setPower(intakePower);
 
         previousHasBall = hasBall;
     }
@@ -88,15 +90,15 @@ public class Intake {
     // ------------- Auto Methods -------------
 
     public void intakeIn() {
-        robot.intake.setPower(1.0);
+        robot.intakeMotor.setPower(1.0);
     }
 
     public void intakeOut() {
-        robot.intake.setPower(-1.0);
+        robot.intakeMotor.setPower(-1.0);
     }
 
     public void stopIntake() {
-        robot.intake.setPower(0.0);
+        robot.intakeMotor.setPower(0.0);
     }
 
     public void indexerUp() {

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.util.InterpLUT;
 
@@ -26,7 +27,9 @@ public class Shooter {
             0.01, 0, 0, 0
     );
 
-    public static double kA = 0.0007;
+    public static double kV = 0.0007;
+
+    ElapsedTime detectionTimer = new ElapsedTime();
 
     HardwareCoquett robot;
 
@@ -41,10 +44,15 @@ public class Shooter {
 
     public void update() {
         shooterController.setCoefficients(shooterCoeffs);
-        double tA = robot.limelight.getLatestResult().getTa();
+        Double tA = robot.getAllianceTA();
 
-        if(aimingLimelight  && robot.getAllianceTA() != null) {
-            shooterTargetVelocity = lut.get(tA);
+        if(aimingLimelight) {
+            if (tA != null) {
+                shooterTargetVelocity = lut.get(tA);
+                detectionTimer.reset();
+            } else if(detectionTimer.seconds() >= 2) {
+                shooterTargetVelocity = 1200;
+            }
         }
 
         shooterController.setTolerance(20);
@@ -52,7 +60,7 @@ public class Shooter {
 
         double currentVelocity = -robot.shooterMotor.getVelocity();
 
-        double power = (kA * shooterTargetVelocity) + shooterController.calculate(currentVelocity);
+        double power = (kV * shooterTargetVelocity) + shooterController.calculate(currentVelocity);
 
         robot.disparadorMotor.setPower(power);
         robot.shooterMotor.setPower(power);

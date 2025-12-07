@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alliance;
 import org.firstinspires.ftc.teamcode.HardwareCoquett;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
 
 @Configurable
@@ -21,7 +20,6 @@ public class AutonomousGlobal extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     protected final HardwareCoquett robot;
-    protected final Intake intake;
     protected final Alliance alliance;
     private int pathState;
     private Paths paths;
@@ -41,7 +39,6 @@ public class AutonomousGlobal extends OpMode {
     public AutonomousGlobal(Alliance alliance) {
         this.alliance = alliance;
         robot = new HardwareCoquett(alliance);
-        intake = new Intake(robot);
     }
 
     @Override
@@ -208,7 +205,7 @@ public class AutonomousGlobal extends OpMode {
                 robot.shooter.aimingLimelight = true;
                 if(autoTime.seconds() >= 2.5){
                     robot.ballUp.setPower(0.8);
-                    robot.intake.setPower(-1);
+                    robot.intakeMotor.setPower(-1);
                     if(autoTime.seconds()>=4){
                         robot.asistencia.setPosition(1);
                     }
@@ -222,7 +219,7 @@ public class AutonomousGlobal extends OpMode {
                 break;
 
             case 2:
-                robot.intake.setPower(-1);
+                robot.intakeMotor.setPower(-1);
                 if (!robot.follower.isBusy()) {
                     robot.follower.followPath(ShootPPG, true);
                     setPathState(3);

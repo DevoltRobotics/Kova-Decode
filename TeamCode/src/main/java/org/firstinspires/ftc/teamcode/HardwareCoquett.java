@@ -14,13 +14,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.Turret;
 
 public class HardwareCoquett {
 
     // Motores principales
-    public DcMotor intake;
+    public DcMotor intakeMotor;
 
     public DcMotorEx shooterMotor;
     public DcMotorEx disparadorMotor;
@@ -40,6 +41,7 @@ public class HardwareCoquett {
 
     public Limelight3A limelight;
 
+    public Intake intake = new Intake(this);
     public Shooter shooter = new Shooter(this);
     public Turret turret = new Turret(this);
 
@@ -59,7 +61,7 @@ public class HardwareCoquett {
         follower = Constants.createFollower(hardwareMap);
 
         // Motores
-        intake = hardwareMap.get(DcMotor.class, "intake");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intake");
 
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");
         disparadorMotor = hardwareMap.get(DcMotorEx.class, "disparador");
