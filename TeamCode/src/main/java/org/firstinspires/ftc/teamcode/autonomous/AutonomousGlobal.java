@@ -34,6 +34,7 @@ public class AutonomousGlobal extends OpMode {
     public static PathChain LeavePos;
     boolean initPathStarted = false;
     private final ElapsedTime autoTime = new ElapsedTime();
+    private final ElapsedTime stateTime = new ElapsedTime();
 
 
     public AutonomousGlobal(Alliance alliance) {
@@ -45,11 +46,6 @@ public class AutonomousGlobal extends OpMode {
     public void init_loop() {
         robot.update();
         robot.turret.aimingLimelight  = true;
-        if (!initPathStarted) {
-            robot.follower.followPath(InitPos);
-            initPathStarted = true;
-        }
-
         panelsTelemetry.debug("Init Path Running", robot.follower.isBusy());
         panelsTelemetry.update(telemetry);
     }
@@ -57,7 +53,6 @@ public class AutonomousGlobal extends OpMode {
 
     @Override
     public void start() {
-        // When PLAY is pressed, skip the InitPos step
         pathState = 0;
         autoTime.reset();
     }
@@ -67,9 +62,7 @@ public class AutonomousGlobal extends OpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         robot.init(hardwareMap);
-        robot.follower.setMaxPower(0.8);
-
-        if (alliance == Alliance.RED) {
+        if (alliance == Alliance.BLUE) {
             robot.follower.setStartingPose(new Pose(56, 8, Math.toRadians(90)));
         } else {
             robot.follower.setStartingPose(new Pose(88, 8, Math.toRadians(90)));
@@ -96,8 +89,8 @@ public class AutonomousGlobal extends OpMode {
     public static class Paths {
         public Paths(Follower follower, Alliance alliance) {
 
-            if (alliance == Alliance.RED) {
-                // ================== RED ALLIANCE ==================
+            if (alliance == Alliance.BLUE) {
+                // ================== BLUE ALLIANCE ==================
                 InitPos = follower
                         .pathBuilder()
                         .addPath(new BezierLine(new Pose(56.000, 8.000), new Pose(61.000, 24.000)))
@@ -147,7 +140,7 @@ public class AutonomousGlobal extends OpMode {
                         .build();
 
             } else {
-                // ================== BLUE ALLIANCE ==================
+                // ================== RED ALLIANCE ==================
                 InitPos = follower
                         .pathBuilder()
                         .addPath(new BezierLine(new Pose(88.000, 8.000), new Pose(84.500, 24.000)))
@@ -202,27 +195,48 @@ public class AutonomousGlobal extends OpMode {
     public int autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                robot.follower.followPath(InitPos);
                 robot.shooter.aimingLimelight = true;
                 if(autoTime.seconds() >= 2.5){
                     robot.ballUp.setPower(0.8);
                     robot.intakeMotor.setPower(-1);
-                    if(autoTime.seconds()>=4){
+                    if(autoTime.seconds()>=5){
                         robot.asistencia.setPosition(1);
+                        if(autoTime.seconds() >= 7){
+                            setPathState(1);
+                            robot.asistencia.setPosition(0.5);
+
+                        }
                     }
                 }
                 break;
             case 1:
+                robot.follower.setMaxPower(0.5);
+                robot.shooter.aimingLimelight = false;
                 if (!robot.follower.isBusy()) {
                     robot.follower.followPath(GrabPPG, true);
+                    robot.ballStop.setPosition(0.1);
+                    robot.intake.intakeIn();
                     setPathState(2);
                 }
                 break;
 
             case 2:
-                robot.intakeMotor.setPower(-1);
+                robot.shooter.aimingLimelight = true;
                 if (!robot.follower.isBusy()) {
                     robot.follower.followPath(ShootPPG, true);
-                    setPathState(3);
+                    if(!robot.follower.isBusy()){
+                        stateTime.reset();
+                            robot.ballUp.setPower(0.8);
+                            robot.intakeMotor.setPower(-1);
+                            if(stateTime.seconds()>=3){
+                                robot.asistencia.setPosition(1);
+                                if(stateTime.seconds() >= 6){
+                                    setPathState(3);
+                                    robot.asistencia.setPosition(0.5);
+                                }
+                            }
+                    }
                 }
                 break;
 
