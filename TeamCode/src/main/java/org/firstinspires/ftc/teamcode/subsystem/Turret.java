@@ -40,7 +40,7 @@ public class Turret {
                     if(robot.alliance == Alliance.BLUE) {
                         llTurretController.setSetPoint(3);
                     } else {
-                        llTurretController.setSetPoint(-3);
+                        llTurretController.setSetPoint(0);
                     }
                 } else {
                     llTurretController.setSetPoint(0);

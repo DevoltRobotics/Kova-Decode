@@ -149,7 +149,7 @@ public class AutonomousGlobal extends OpMode {
 
                 GrabPPG = follower
                         .pathBuilder()
-                        .addPath(new BezierCurve(new Pose(84.500, 22.000), new Pose(80.000, 37.000), new Pose(130.000, 35.000)))
+                        .addPath(new BezierCurve(new Pose(84.500, 22.000), new Pose(80.000, 37.000), new Pose(135.000, 35.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(0))
                         .build();
 
@@ -213,27 +213,36 @@ public class AutonomousGlobal extends OpMode {
             case 1:
                 robot.follower.setMaxPower(0.5);
                 robot.shooter.aimingLimelight = false;
+                robot.turret.aimingLimelight = false;
                 if (!robot.follower.isBusy()) {
                     robot.follower.followPath(GrabPPG, true);
+                    robot.shooter.aimingLimelight = false;
+                    robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
-                    robot.intake.intakeIn();
-                    setPathState(2);
+                    robot.intake.intakeOut();
+                    if(robot.follower.getPose().getX() > 125){
+                        setPathState(2);
+                    }
                 }
                 break;
 
             case 2:
                 robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
                 if (!robot.follower.isBusy()) {
                     robot.follower.followPath(ShootPPG, true);
-                    if(!robot.follower.isBusy()){
+                    robot.intake.stopIntake();
+                    robot.follower.setMaxPower(1);
+                    if(robot.follower.getPose().getX() < 85){
                         stateTime.reset();
-                            robot.ballUp.setPower(0.8);
+                        robot.ballStop.setPosition(0.3); //Open
+                        robot.ballUp.setPower(0.8);
                             robot.intakeMotor.setPower(-1);
                             if(stateTime.seconds()>=3){
                                 robot.asistencia.setPosition(1);
                                 if(stateTime.seconds() >= 6){
                                     setPathState(3);
-                                    robot.asistencia.setPosition(0.5);
+                                    robot.asistencia.setPosition(0.5); //TODO Checar por que no sube la asistencia
                                 }
                             }
                     }
