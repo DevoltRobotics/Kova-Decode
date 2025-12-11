@@ -202,11 +202,9 @@ public class AutonomousGlobal extends OpMode {
             case 0:
                 robot.follower.followPath(InitPos);
                 robot.shooter.aimingLimelight = true;
-
-                if (autoTime.seconds() >= 2.5) {
+                if (autoTime.seconds() >= 1.5) {
                     robot.ballUp.setPower(0.8);
                     robot.intakeMotor.setPower(-1);
-
                     if (!robot.isDetected()) {
                         if (!asistenciaDelayActive) {
                             asistenciaDelayActive = true;
@@ -215,7 +213,6 @@ public class AutonomousGlobal extends OpMode {
                         if (asistenciaDelayTimer.seconds() >= 1) {
                             robot.asistencia.setPosition(1);
                             setPathState(1);
-
                         }
                     } else {
                         asistenciaDelayActive = false;
@@ -236,7 +233,13 @@ public class AutonomousGlobal extends OpMode {
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
                     robot.noStuck.setPower(-1);
-                    if(robot.follower.getPose().getX() > 125){
+
+                    double x = robot.follower.getPose().getX();
+                    boolean reachedStack =
+                            (alliance == Alliance.RED  && x > 125) ||
+                                    (alliance == Alliance.BLUE && x < 19);
+
+                    if (reachedStack) {
                         setPathState(2);
                     }
                 }
@@ -252,7 +255,12 @@ public class AutonomousGlobal extends OpMode {
                     robot.intake.stopIntake();
                     robot.follower.setMaxPower(1);
 
-                    if (robot.follower.getPose().getX() < 85.5) {
+                    double x = robot.follower.getPose().getX();
+                    boolean backToShooter =
+                            (alliance == Alliance.RED  && x < 85.5) ||
+                                    (alliance == Alliance.BLUE && x > 58.5);
+
+                    if (backToShooter) {
 
                         robot.ballStop.setPosition(0.3);  // Open
                         robot.ballUp.setPower(0.8);
@@ -266,7 +274,6 @@ public class AutonomousGlobal extends OpMode {
                             if (asistenciaDelayTimer.seconds() >= 0.5) {
                                 robot.asistencia.setPosition(1);
                                 setPathState(3);
-
                             }
                         } else {
                             asistenciaDelayActive = false;
@@ -274,6 +281,7 @@ public class AutonomousGlobal extends OpMode {
                     }
                 }
                 break;
+
             case 3:
                 robot.asistencia.setPosition(0);
                 robot.follower.setMaxPower(0.6);
@@ -286,7 +294,13 @@ public class AutonomousGlobal extends OpMode {
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
                     robot.noStuck.setPower(-1);
-                    if(robot.follower.getPose().getX() > 125){
+
+                    double x = robot.follower.getPose().getX();
+                    boolean reachedSecondStack =
+                            (alliance == Alliance.RED  && x > 125) ||
+                                    (alliance == Alliance.BLUE && x < 19);
+
+                    if (reachedSecondStack) {
                         setPathState(4);
                     }
                 }
@@ -300,7 +314,12 @@ public class AutonomousGlobal extends OpMode {
                     robot.intake.stopIntake();
                     robot.follower.setMaxPower(1);
 
-                    if (robot.follower.getPose().getX() < 86) {
+                    double x = robot.follower.getPose().getX();
+                    boolean backToShooter2 =
+                            (alliance == Alliance.RED  && x < 86) ||
+                                    (alliance == Alliance.BLUE && x > 58);
+
+                    if (backToShooter2) {
 
                         robot.ballStop.setPosition(0.3);  // Open
                         robot.ballUp.setPower(0.8);
@@ -314,7 +333,6 @@ public class AutonomousGlobal extends OpMode {
                             if (asistenciaDelayTimer.seconds() >= 0.5) {
                                 robot.asistencia.setPosition(1);
                                 setPathState(5);
-
                             }
                         } else {
                             asistenciaDelayActive = false;
@@ -329,25 +347,26 @@ public class AutonomousGlobal extends OpMode {
                 }
                 break;
 
-            case 6:
-                if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(ShootGPP, true);
-                    setPathState(7);
-                }
-                break;
-
-            case 7:
-                if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(LeavePos, true);
-                    setPathState(8);
-                }
-                break;
-
-            case 8:
-                if (!robot.follower.isBusy()) {
-                    setPathState(-1);
-                }
-                break;
+//            case 6:
+//                if (!robot.follower.isBusy()) {
+//                    robot.follower.followPath(ShootGPP, true);
+//                    setPathState(7);
+//                }
+//                break;
+//
+//            case 7:
+//                if (!robot.follower.isBusy()) {
+//                    robot.follower.followPath(LeavePos, true);
+//                    setPathState(8);
+//                }
+//                break;
+//
+//            case 8:
+//                if (!robot.follower.isBusy()) {
+//                    setPathState(-1);
+//                }
+//                break;
+            //Por Falta de tiempo
         }
 
         return pathState;
