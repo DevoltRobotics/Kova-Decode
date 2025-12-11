@@ -36,15 +36,18 @@ public class HardwareCoquett {
     public Servo asistencia;
     public DigitalChannel laserInput;
 
-    // Follower para manejo de movimiento
-    public Follower follower;
+    boolean detected;
 
+
+    // Follower para manejo de movimiento
+
+    public Follower follower;
     public Limelight3A limelight;
 
     public Intake intake = new Intake(this);
+
     public Shooter shooter = new Shooter(this);
     public Turret turret = new Turret(this);
-
     public final Telemetry panelsTelem = PanelsTelemetry.INSTANCE.getFtcTelemetry();
 
     public final Alliance alliance;
@@ -96,6 +99,9 @@ public class HardwareCoquett {
     public void update() {
         llResult = limelight.getLatestResult();
 
+        boolean stateHigh = laserInput.getState();
+        detected = stateHigh;
+
         shooter.update();
         turret.update();
 
@@ -121,6 +127,10 @@ public class HardwareCoquett {
         }
 
         return null;
+    }
+
+    public boolean isDetected() {
+        return detected;
     }
 
 

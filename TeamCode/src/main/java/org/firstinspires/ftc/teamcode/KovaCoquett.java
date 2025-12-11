@@ -19,8 +19,8 @@ public abstract class KovaCoquett extends OpMode {
     private final ElapsedTime asistedTimer = new ElapsedTime();
     private final ElapsedTime closedTimer = new ElapsedTime();
 
-    // --------------------------------------------------------------
 
+    // --------------------------------------------------------------
     public KovaCoquett(Alliance alliance) {
         robot = new HardwareCoquett(alliance);
     }
@@ -41,8 +41,6 @@ public abstract class KovaCoquett extends OpMode {
 
     @Override
     public void loop() {
-        boolean stateHigh = robot.laserInput.getState();
-        boolean detected = stateHigh;
         // ------------------- DRIVE -------------------
         if (!gamepad1.b) {
             robot.follower.setTeleOpDrive(
@@ -186,10 +184,9 @@ public abstract class KovaCoquett extends OpMode {
         telemetry.addData("Sube bolas", robot.intake.getIndexerPosition());
         telemetry.addData("Para bolas", robot.intake.getGatePosition());
         telemetry.addData("Ángulo", Math.toDegrees(robot.follower.getPose().getHeading()));
-        telemetry.addData("Asisted", asisted);
+        telemetry.addData("Detected", robot.isDetected());
+
 
         telemetry.update();
     }
-
-
 }

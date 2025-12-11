@@ -32,9 +32,12 @@ public class AutonomousGlobal extends OpMode {
     public static PathChain GrabGPP;
     public static PathChain ShootGPP;
     public static PathChain LeavePos;
-    boolean initPathStarted = false;
     private final ElapsedTime autoTime = new ElapsedTime();
     private final ElapsedTime stateTime = new ElapsedTime();
+
+    private final ElapsedTime asistenciaDelayTimer = new ElapsedTime();
+    private boolean asistenciaDelayActive = false;
+
 
 
     public AutonomousGlobal(Alliance alliance) {
@@ -69,6 +72,7 @@ public class AutonomousGlobal extends OpMode {
         }
 
         paths = new Paths(robot.follower, alliance);
+        robot.follower.setMaxPower(1);
         pathState = -1;
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
@@ -83,6 +87,7 @@ public class AutonomousGlobal extends OpMode {
         panelsTelemetry.debug("X", robot.follower.getPose().getX());
         panelsTelemetry.debug("Y", robot.follower.getPose().getY());
         panelsTelemetry.debug("Heading", robot.follower.getPose().getHeading());
+        panelsTelemetry.debug("State time", stateTime.seconds());
         panelsTelemetry.update(telemetry);
     }
 
@@ -161,14 +166,14 @@ public class AutonomousGlobal extends OpMode {
 
                 GrabPGP = follower
                         .pathBuilder()
-                        .addPath(new BezierCurve(new Pose(84.500, 24.000), new Pose(72.000, 62.000), new Pose(130.000, 60.000)))
-                        .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(0))
+                        .addPath(new BezierCurve(new Pose(84.500, 24.000), new Pose(72.000, 62.000), new Pose(135.000, 60.000)))
+                        .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(0),0.8)
                         .build();
 
                 ShootPGP = follower
                         .pathBuilder()
-                        .addPath(new BezierLine(new Pose(130.000, 60.000), new Pose(87.000, 75.000)))
-                        .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(60))
+                        .addPath(new BezierLine(new Pose(130.000, 60.000), new Pose(84.500, 24.000)))
+                        .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(60), 0.8)
                         .build();
 
                 GrabGPP = follower
@@ -185,7 +190,7 @@ public class AutonomousGlobal extends OpMode {
 
                 LeavePos = follower
                         .pathBuilder()
-                        .addPath(new BezierLine(new Pose(87.000, 74.000), new Pose(85.000, 54.000)))
+                        .addPath(new BezierLine(new Pose(84.5, 24.000), new Pose(85.000, 54.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(180))
                         .build();
             }
@@ -197,29 +202,40 @@ public class AutonomousGlobal extends OpMode {
             case 0:
                 robot.follower.followPath(InitPos);
                 robot.shooter.aimingLimelight = true;
-                if(autoTime.seconds() >= 2.5){
+
+                if (autoTime.seconds() >= 2.5) {
                     robot.ballUp.setPower(0.8);
                     robot.intakeMotor.setPower(-1);
-                    if(autoTime.seconds()>=5){
-                        robot.asistencia.setPosition(1);
-                        if(autoTime.seconds() >= 7){
+
+                    if (!robot.isDetected()) {
+                        if (!asistenciaDelayActive) {
+                            asistenciaDelayActive = true;
+                            asistenciaDelayTimer.reset();
+                        }
+                        if (asistenciaDelayTimer.seconds() >= 1) {
+                            robot.asistencia.setPosition(1);
                             setPathState(1);
-                            robot.asistencia.setPosition(0.5);
 
                         }
+                    } else {
+                        asistenciaDelayActive = false;
                     }
                 }
                 break;
+
             case 1:
-                robot.follower.setMaxPower(0.5);
+                robot.follower.setMaxPower(0.6);
                 robot.shooter.aimingLimelight = false;
                 robot.turret.aimingLimelight = false;
+
                 if (!robot.follower.isBusy()) {
+                    robot.asistencia.setPosition(0.5);
                     robot.follower.followPath(GrabPPG, true);
                     robot.shooter.aimingLimelight = false;
                     robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
+                    robot.noStuck.setPower(-1);
                     if(robot.follower.getPose().getX() > 125){
                         setPathState(2);
                     }
@@ -229,44 +245,87 @@ public class AutonomousGlobal extends OpMode {
             case 2:
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
+
                 if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(ShootPPG, true);
+
+                    robot.follower.followPath(ShootPPG, false);
                     robot.intake.stopIntake();
                     robot.follower.setMaxPower(1);
-                    if(robot.follower.getPose().getX() < 85){
-                        stateTime.reset();
-                        robot.ballStop.setPosition(0.3); //Open
+
+                    if (robot.follower.getPose().getX() < 85.5) {
+
+                        robot.ballStop.setPosition(0.3);  // Open
                         robot.ballUp.setPower(0.8);
-                            robot.intakeMotor.setPower(-1);
-                            if(stateTime.seconds()>=3){
-                                robot.asistencia.setPosition(1);
-                                if(stateTime.seconds() >= 6){
-                                    setPathState(3);
-                                    robot.asistencia.setPosition(0.5); //TODO Checar por que no sube la asistencia
-                                }
+                        robot.intakeMotor.setPower(-1);
+
+                        if (!robot.isDetected()) {
+                            if (!asistenciaDelayActive) {
+                                asistenciaDelayActive = true;
+                                asistenciaDelayTimer.reset();
                             }
+                            if (asistenciaDelayTimer.seconds() >= 0.5) {
+                                robot.asistencia.setPosition(1);
+                                setPathState(3);
+
+                            }
+                        } else {
+                            asistenciaDelayActive = false;
+                        }
+                    }
+                }
+                break;
+            case 3:
+                robot.asistencia.setPosition(0);
+                robot.follower.setMaxPower(0.6);
+                robot.shooter.aimingLimelight = false;
+                robot.turret.aimingLimelight = false;
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(GrabPGP, true);
+                    robot.shooter.aimingLimelight = false;
+                    robot.turret.aimingLimelight = false;
+                    robot.ballStop.setPosition(0.1);
+                    robot.intake.intakeOut();
+                    robot.noStuck.setPower(-1);
+                    if(robot.follower.getPose().getX() > 125){
+                        setPathState(4);
                     }
                 }
                 break;
 
-            case 3:
-                if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(GrabPGP, true);
-                    setPathState(4);
-                }
-                break;
-
             case 4:
+                robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
                 if (!robot.follower.isBusy()) {
                     robot.follower.followPath(ShootPGP, true);
-                    setPathState(5);
+                    robot.intake.stopIntake();
+                    robot.follower.setMaxPower(1);
+
+                    if (robot.follower.getPose().getX() < 86) {
+
+                        robot.ballStop.setPosition(0.3);  // Open
+                        robot.ballUp.setPower(0.8);
+                        robot.intakeMotor.setPower(-1);
+
+                        if (!robot.isDetected()) {
+                            if (!asistenciaDelayActive) {
+                                asistenciaDelayActive = true;
+                                asistenciaDelayTimer.reset();
+                            }
+                            if (asistenciaDelayTimer.seconds() >= 0.5) {
+                                robot.asistencia.setPosition(1);
+                                setPathState(5);
+
+                            }
+                        } else {
+                            asistenciaDelayActive = false;
+                        }
+                    }
                 }
                 break;
 
             case 5:
                 if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(GrabGPP, true);
-                    setPathState(6);
+                    robot.follower.followPath(LeavePos, true);
                 }
                 break;
 
@@ -295,6 +354,9 @@ public class AutonomousGlobal extends OpMode {
     }
 
     public void setPathState(int pState) {
+        if(pState != pathState){
+            stateTime.reset();
+        }
         pathState = pState;
     }
 }
