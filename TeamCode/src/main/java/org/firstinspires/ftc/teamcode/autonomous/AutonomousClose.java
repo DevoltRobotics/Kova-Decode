@@ -103,7 +103,9 @@ public class AutonomousClose extends OpMode {
                 InitShoot = follower
                         .pathBuilder()
                         .addPath(
-                                new BezierLine(new Pose(20.500, 124.000), new Pose(50.000, 93.000))
+                                new BezierLine(
+                                        new Pose(20.500, 124.000), //Punto Inicio
+                                        new Pose(50.000, 93.000)) //Punto Final
                         )
                         .setConstantHeadingInterpolation(Math.toRadians(144))
                         .build();
@@ -112,9 +114,9 @@ public class AutonomousClose extends OpMode {
                         .pathBuilder()
                         .addPath(
                                 new BezierCurve(
-                                        new Pose(50.000, 93.000),
-                                        new Pose(55.000, 80.000),
-                                        new Pose(23.000, 84.000)
+                                        new Pose(50.000, 93.000), //Punto Inicial de la curva, es decir, el punto final del path pasado
+                                        new Pose(55.000, 80.000), //Punto de control
+                                        new Pose(21.000, 84.000) //Punto final de la curva
                                 )
                         )
                         .setLinearHeadingInterpolation(Math.toRadians(144), Math.toRadians(180))
@@ -171,7 +173,7 @@ public class AutonomousClose extends OpMode {
                 Park = follower
                         .pathBuilder()
                         .addPath(
-                                new BezierLine(new Pose(60.000, 83.000), new Pose(60.000, 49.000))
+                                new BezierLine(new Pose(60.000, 83.000), new Pose(35.000, 78.000))
                         )
                         .setConstantHeadingInterpolation(Math.toRadians(144))
                         .build();
@@ -249,7 +251,7 @@ public class AutonomousClose extends OpMode {
                 Park = follower
                         .pathBuilder()
                         .addPath(
-                                new BezierLine(new Pose(83.000, 82.000), new Pose(83.000, 48.000))
+                                new BezierLine(new Pose(83.000, 82.000), new Pose(110.000, 79.000))
                         )
                         .setConstantHeadingInterpolation(Math.toRadians(38))
                         .build();
@@ -457,29 +459,7 @@ public class AutonomousClose extends OpMode {
                     pathActivation=true;
                 }
                 break;
-
-//            case 6:
-//                if (!robot.follower.isBusy()) {
-//                    robot.follower.followPath(ShootGPP, true);
-//                    setPathState(7);
-//                }
-//                break;
-//
-//            case 7:
-//                if (!robot.follower.isBusy()) {
-//                    robot.follower.followPath(LeavePos, true);
-//                    setPathState(8);
-//                }
-//                break;
-//
-//            case 8:
-//                if (!robot.follower.isBusy()) {
-//                    setPathState(-1);
-//                }
-//                break;
-            //Por Falta de tiempo
         }
-
         return pathState;
     }
 
