@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Alliance;
 
-@Autonomous(name = "RedAllianceAuto", group = "Autonomous")
-public class RedAutonomous extends AutonomousGlobal {
-    public RedAutonomous() {
+@Autonomous(name = "\uD83D\uDFE5Far Side\uD83D\uDFE5", group = "Autonomous")
+public class RedAutoFar extends AutonomousFar {
+    public RedAutoFar() {
         super(Alliance.RED);
     }
 }

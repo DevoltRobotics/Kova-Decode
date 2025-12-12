@@ -13,10 +13,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Alliance;
 import org.firstinspires.ftc.teamcode.HardwareCoquett;
-import org.firstinspires.ftc.teamcode.subsystem.Intake;
 
 @Configurable
-public class AutonomousGlobal extends OpMode {
+public class AutonomousFar extends OpMode {
 
     private TelemetryManager panelsTelemetry;
     protected final HardwareCoquett robot;
@@ -40,7 +39,7 @@ public class AutonomousGlobal extends OpMode {
 
 
 
-    public AutonomousGlobal(Alliance alliance) {
+    public AutonomousFar(Alliance alliance) {
         this.alliance = alliance;
         robot = new HardwareCoquett(alliance);
     }
@@ -104,25 +103,25 @@ public class AutonomousGlobal extends OpMode {
 
                 GrabPPG = follower
                         .pathBuilder()
-                        .addPath(new BezierCurve(new Pose(61.000, 22.000), new Pose(63.000, 37.000), new Pose(13.000, 35.000)))
+                        .addPath(new BezierCurve(new Pose(61.000, 22.000), new Pose(63.000, 37.000), new Pose(8.000, 35.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(180))
                         .build();
 
                 ShootPPG = follower
                         .pathBuilder()
-                        .addPath(new BezierLine(new Pose(13.000, 35.000), new Pose(61.000, 24.000)))
+                        .addPath(new BezierLine(new Pose(8.000, 33.000), new Pose(61.000, 24.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(120))
                         .build();
 
                 GrabPGP = follower
                         .pathBuilder()
-                        .addPath(new BezierCurve(new Pose(61.000, 24.000), new Pose(63.000, 66.000), new Pose(13.000, 60.000)))
+                        .addPath(new BezierCurve(new Pose(61.000, 24.000), new Pose(63.000, 66.000), new Pose(8.000, 60.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(180))
                         .build();
 
                 ShootPGP = follower
                         .pathBuilder()
-                        .addPath(new BezierLine(new Pose(13.000, 60.000), new Pose(60.000, 75.000)))
+                        .addPath(new BezierLine(new Pose(13.000, 60.000), new Pose(61.000, 24.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(120))
                         .build();
 
@@ -141,7 +140,7 @@ public class AutonomousGlobal extends OpMode {
                 LeavePos = follower
                         .pathBuilder()
                         .addPath(new BezierLine(new Pose(46.000, 87.000), new Pose(47.000, 56.000)))
-                        .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(0))
+                        .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(180))
                         .build();
 
             } else {
@@ -200,6 +199,7 @@ public class AutonomousGlobal extends OpMode {
     public int autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+
                 robot.follower.followPath(InitPos);
                 robot.shooter.aimingLimelight = true;
                 if (autoTime.seconds() >= 1.5) {
@@ -235,9 +235,7 @@ public class AutonomousGlobal extends OpMode {
                     robot.noStuck.setPower(-1);
 
                     double x = robot.follower.getPose().getX();
-                    boolean reachedStack =
-                            (alliance == Alliance.RED  && x > 125) ||
-                                    (alliance == Alliance.BLUE && x < 19);
+                    boolean reachedStack = (alliance == Alliance.RED  && x > 125) || (alliance == Alliance.BLUE && x < 16);
 
                     if (reachedStack) {
                         setPathState(2);
@@ -298,7 +296,7 @@ public class AutonomousGlobal extends OpMode {
                     double x = robot.follower.getPose().getX();
                     boolean reachedSecondStack =
                             (alliance == Alliance.RED  && x > 125) ||
-                                    (alliance == Alliance.BLUE && x < 19);
+                                    (alliance == Alliance.BLUE && x < 16);
 
                     if (reachedSecondStack) {
                         setPathState(4);

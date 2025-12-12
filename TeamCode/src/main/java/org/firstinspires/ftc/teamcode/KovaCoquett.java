@@ -32,6 +32,7 @@ public abstract class KovaCoquett extends OpMode {
         if (robot.light != null) {
             robot.light.setPosition(RGB_PINK);
         }
+        robot.asistencia.setPosition(0);
     }
 
     @Override
