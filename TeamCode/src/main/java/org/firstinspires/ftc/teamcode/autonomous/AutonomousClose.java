@@ -114,7 +114,7 @@ public class AutonomousClose extends OpMode {
                                 new BezierCurve(
                                         new Pose(50.000, 93.000),
                                         new Pose(55.000, 80.000),
-                                        new Pose(15.000, 84.000)
+                                        new Pose(23.000, 84.000)
                                 )
                         )
                         .setLinearHeadingInterpolation(Math.toRadians(144), Math.toRadians(180))
@@ -123,7 +123,7 @@ public class AutonomousClose extends OpMode {
                 ShootPPG = follower
                         .pathBuilder()
                         .addPath(
-                                new BezierLine(new Pose(15.000, 84.000), new Pose(60.000, 83.000))
+                                new BezierLine(new Pose(23.000, 84.000), new Pose(60.000, 83.000))
                         )
                         .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(144))
                         .build();
@@ -350,12 +350,12 @@ public class AutonomousClose extends OpMode {
                 robot.shooter.aimingLimelight = false;
                 robot.turret.aimingLimelight = false;
                 if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(GrabPGP, true);
                     robot.shooter.aimingLimelight = false;
                     robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
                     robot.noStuck.setPower(-1);
+                    robot.follower.followPath(GrabPGP, true);
 
                     double x = robot.follower.getPose().getX();
                     boolean reachedSecondStack = (alliance == Alliance.RED  && x > 118) || (alliance == Alliance.BLUE && x < 19);
