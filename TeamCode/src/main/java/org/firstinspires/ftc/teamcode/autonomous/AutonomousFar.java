@@ -140,7 +140,7 @@ public class AutonomousFar extends OpMode {
 
                 LeavePos = follower
                         .pathBuilder()
-                        .addPath(new BezierLine(new Pose(46.000, 87.000), new Pose(47.000, 56.000)))
+                        .addPath(new BezierLine(new Pose(46.000, 87.000), new Pose(28.000, 15.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(180))
                         .build();
 
@@ -190,7 +190,7 @@ public class AutonomousFar extends OpMode {
 
                 LeavePos = follower
                         .pathBuilder()
-                        .addPath(new BezierLine(new Pose(84.5, 24.000), new Pose(85.000, 54.000)))
+                        .addPath(new BezierLine(new Pose(84.5, 24.000), new Pose(108.000, 15.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(180))
                         .build();
             }
