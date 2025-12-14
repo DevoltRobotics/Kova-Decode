@@ -20,7 +20,7 @@ public class AutonomousFar extends OpMode {
     private TelemetryManager panelsTelemetry;
     protected final HardwareCoquett robot;
     protected final Alliance alliance;
-    private int pathState;
+    private int pathState = -1;
     private Paths paths;
 
     public static PathChain InitPos;
@@ -57,6 +57,7 @@ public class AutonomousFar extends OpMode {
     public void start() {
         pathState = 0;
         autoTime.reset();
+        setPathState(-1);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class AutonomousFar extends OpMode {
 
                 ShootPPG = follower
                         .pathBuilder()
-                        .addPath(new BezierLine(new Pose(8.000, 33.000), new Pose(61.000, 24.000)))
+                        .addPath(new BezierLine(new Pose(8.000, 37.000), new Pose(61.000, 24.000)))
                         .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(120))
                         .build();
 
@@ -196,8 +197,16 @@ public class AutonomousFar extends OpMode {
         }
     }
 
+
     public int autonomousPathUpdate() {
         switch (pathState) {
+            case -1:
+                if(stateTime.seconds() >= 8) {
+                    setPathState(0);
+                }
+
+                break;
+
             case 0:
 
                 robot.follower.followPath(InitPos);
@@ -210,7 +219,7 @@ public class AutonomousFar extends OpMode {
                             asistenciaDelayActive = true;
                             asistenciaDelayTimer.reset();
                         }
-                        if (asistenciaDelayTimer.seconds() >= 1) {
+                        if (asistenciaDelayTimer.seconds() >= 2) {
                             robot.asistencia.setPosition(1);
                             setPathState(1);
                         }
@@ -269,7 +278,7 @@ public class AutonomousFar extends OpMode {
                                 asistenciaDelayActive = true;
                                 asistenciaDelayTimer.reset();
                             }
-                            if (asistenciaDelayTimer.seconds() >= 0.5) {
+                            if (asistenciaDelayTimer.seconds() >= 2) {
                                 robot.asistencia.setPosition(1);
                                 setPathState(3);
                             }
@@ -328,7 +337,7 @@ public class AutonomousFar extends OpMode {
                                 asistenciaDelayActive = true;
                                 asistenciaDelayTimer.reset();
                             }
-                            if (asistenciaDelayTimer.seconds() >= 0.5) {
+                            if (asistenciaDelayTimer.seconds() >= 2) {
                                 robot.asistencia.setPosition(1);
                                 setPathState(5);
                             }

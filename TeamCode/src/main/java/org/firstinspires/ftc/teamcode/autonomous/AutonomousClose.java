@@ -279,7 +279,7 @@ public class AutonomousClose extends OpMode {
                             robot.asistencia.setPosition(1);
 
                         }
-                        if (asistenciaDelayTimer.seconds() >= 1) {
+                        if (asistenciaDelayTimer.seconds() >= 2) {
                             setPathState(1);
                         }
                     } else {
@@ -334,7 +334,7 @@ public class AutonomousClose extends OpMode {
                                 robot.asistencia.setPosition(1);
 
                             }
-                            if (asistenciaDelayTimer.seconds() >= 1) {
+                            if (asistenciaDelayTimer.seconds() >= 2) {
                                 setPathState(3);
                             }
                         } else {
@@ -390,7 +390,7 @@ public class AutonomousClose extends OpMode {
                                 robot.asistencia.setPosition(1);
 
                             }
-                            if (asistenciaDelayTimer.seconds() >= 1) {
+                            if (asistenciaDelayTimer.seconds() >= 2) {
                                 setPathState(5);
                             }
                         } else {
@@ -442,7 +442,7 @@ public class AutonomousClose extends OpMode {
                                 robot.asistencia.setPosition(1);
 
                             }
-                            if (asistenciaDelayTimer.seconds() >= 1) {
+                            if (asistenciaDelayTimer.seconds() >= 2) {
                                 setPathState(7);
                             }
                         } else {
