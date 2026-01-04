@@ -40,6 +40,7 @@ public class Intake {
         }
 
         double intakePower = 0.0;
+        double transferPower = 0.0;
         double paraBolasPos = robot.ballStop.getPosition();
         double subeBolasPos = robot.ballUp.getPower();
 
@@ -55,17 +56,20 @@ public class Intake {
 
 
             if (intakeShootRollbackTimer.seconds() < 0.2) {
-                intakePower = -0.4;
-            } else {
                 intakePower = -1.0;
+            } else {
+                intakePower = -0.4;
             }
+
 
         }
         // --- MANUAL INTAKE / INDEXER (gamepad2) ---
         else if (cmd.manualIntakeForward) {
-            intakePower = 1.0;
-        } else if (cmd.manualIntakeReverse) {
             intakePower = -1.0;
+            transferPower = 1.0;
+        } else if (cmd.manualIntakeReverse) {
+            intakePower = 0.4;
+            transferPower = -0.2;
         }
 
         // --- AUTO BALL BLOCKING ---
@@ -83,6 +87,7 @@ public class Intake {
         }*/
 
         robot.intakeMotor.setPower(intakePower);
+        robot.transferMotor.setPower(transferPower);
 
         previousHasBall = hasBall;
     }
@@ -91,14 +96,17 @@ public class Intake {
 
     public void intakeIn() {
         robot.intakeMotor.setPower(1.0);
+        robot.transferMotor.setPower(1.0);
     }
 
     public void intakeOut() {
         robot.intakeMotor.setPower(-1.0);
+        robot.transferMotor.setPower(-1.0);
     }
 
     public void stopIntake() {
         robot.intakeMotor.setPower(0.0);
+        robot.transferMotor.setPower(0.0);
     }
 
     public void indexerUp() {

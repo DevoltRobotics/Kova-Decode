@@ -78,16 +78,18 @@ public abstract class KovaCoquett extends OpMode {
         intakeCmd.autoShoot = gamepad2.a;
         intakeCmd.autoShootJustPressed = gamepad2.aWasPressed();
         intakeCmd.autoShootFeedOverride = gamepad2.right_bumper;
-        intakeCmd.manualIntakeForward = gamepad1.b; //Out
-        intakeCmd.manualIntakeReverse = gamepad1.a; //In
+        intakeCmd.manualIntakeForward = gamepad1.a; //Out
+        intakeCmd.manualIntakeReverse = gamepad1.b; //In
         intakeCmd.manualIndexerUp = gamepad2.dpad_up;
         intakeCmd.autoBlockEnabled = (!gamepad2.a || !gamepad2.left_bumper);
         intakeCmd.shooterClearing = gamepad1.left_bumper;
 
         robot.intake.update(intakeCmd);
 
+
         if (gamepad2.a) {
             robot.ballStop.setPosition(0.3);
+            robot.transferMotor.setPower(1.0);
             closed = false;
             closedTimer.reset();
         } else if (gamepad2.left_bumper) {
@@ -170,14 +172,14 @@ public abstract class KovaCoquett extends OpMode {
         }
 
 
-        // ------------------- LIFT (LIBRO / SUBEBAJA) -------------------
-        if (gamepad1.dpad_up) {
-            robot.subiBajaMotor.setPower(0.5);
-        } else if (gamepad1.dpad_down) {
-            robot.subiBajaMotor.setPower(-1.0);
-        } else {
-            robot.subiBajaMotor.setPower(0.0);
-        }
+//        // ------------------- LIFT (LIBRO / SUBEBAJA) -------------------
+//        if (gamepad1.dpad_up) {
+//            robot.subiBajaMotor.setPower(0.5);
+//        } else if (gamepad1.dpad_down) {
+//            robot.subiBajaMotor.setPower(-1.0);
+//        } else {
+//            robot.subiBajaMotor.setPower(0.0);
+//        }
 
         // ------------------- ROBOT -------------------
         robot.update();

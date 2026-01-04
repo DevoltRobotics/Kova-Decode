@@ -25,7 +25,7 @@ public class HardwareCoquett {
 
     public DcMotorEx shooterMotor;
     public DcMotorEx disparadorMotor;
-    public DcMotor subiBajaMotor;
+    public DcMotor transferMotor;
 
     // Servos
     public CRServo torrettCoquette;
@@ -73,7 +73,7 @@ public class HardwareCoquett {
 
         disparadorMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        subiBajaMotor=hardwareMap.get(DcMotor.class, "subibaja");
+        transferMotor=hardwareMap.get(DcMotor.class, "transfer");
 
 
         // Servos
