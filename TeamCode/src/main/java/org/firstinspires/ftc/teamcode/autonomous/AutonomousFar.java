@@ -241,7 +241,7 @@ public class AutonomousFar extends OpMode {
                     robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
-                    robot.noStuck.setPower(-1);
+                    //robot.noStuck.setPower(-1);
 
                     double x = robot.follower.getPose().getX();
                     boolean reachedStack = (alliance == Alliance.RED  && x > 125) || (alliance == Alliance.BLUE && x < 16);
@@ -300,7 +300,7 @@ public class AutonomousFar extends OpMode {
                     robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
-                    robot.noStuck.setPower(-1);
+                    //robot.noStuck.setPower(-1);
 
                     double x = robot.follower.getPose().getX();
                     boolean reachedSecondStack =

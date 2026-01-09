@@ -30,9 +30,7 @@ public class HardwareCoquett {
     // Servos
     public CRServo torrettCoquette;
     public CRServo ballUp;
-    public CRServo noStuck;
     public Servo ballStop;
-    public Servo light;
     public Servo asistencia;
     public DigitalChannel laserInput;
 
@@ -81,9 +79,6 @@ public class HardwareCoquett {
         ballUp = hardwareMap.get(CRServo.class, "subeBolas");
         ballStop = hardwareMap.get(Servo.class, "paraBolas");
         asistencia = hardwareMap.get(Servo.class, "asistencia");
-        noStuck = hardwareMap.get(CRServo.class, "stuck");
-        light = hardwareMap.get(Servo.class, "light");
-
 
 
         // Sensor
@@ -94,6 +89,7 @@ public class HardwareCoquett {
         limelight.setPollRateHz(60);
 
         limelight.pipelineSwitch(0);
+        ballStop.setDirection(Servo.Direction.REVERSE);
     }
 
     public void update() {

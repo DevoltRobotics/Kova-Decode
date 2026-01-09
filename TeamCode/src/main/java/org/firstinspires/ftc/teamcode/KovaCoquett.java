@@ -1,5 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
+import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
+import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
+import static org.firstinspires.ftc.teamcode.Const.BALL_UP_UP;
+
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,17 +17,15 @@ public abstract class KovaCoquett extends OpMode {
 
     // ------------------- ROBOT & SUBSYSTEMS -------------------
     protected final HardwareCoquett robot;
-
-    private static final double RGB_OFF = 0.0;
-    private static final double RGB_PINK = 0.85;
     boolean asisted;
     boolean asistedDown;
     boolean closed;
+    private final ElapsedTime oneTwoThree = new ElapsedTime();
     private final ElapsedTime asistedTimer = new ElapsedTime();
     private final ElapsedTime closedTimer = new ElapsedTime();
-
-
+    private final ElapsedTime matchTimer = new ElapsedTime();
     // --------------------------------------------------------------
+
     public KovaCoquett(Alliance alliance) {
         robot = new HardwareCoquett(alliance);
     }
@@ -28,16 +33,13 @@ public abstract class KovaCoquett extends OpMode {
     @Override
     public void init() {
         robot.init(hardwareMap);
-        // Show pink while in INIT
-        if (robot.light != null) {
-            robot.light.setPosition(RGB_PINK);
-        }
         robot.asistencia.setPosition(0);
     }
 
     @Override
     public void start() {
         robot.follower.startTeleOpDrive(true);
+        matchTimer.reset();
     }
 
     @Override
@@ -51,7 +53,6 @@ public abstract class KovaCoquett extends OpMode {
                     false
             );
             telemetry.addData("Modo lento", "Activado");
-            robot.light.setPosition(0.277);
         } else {
             robot.follower.setTeleOpDrive(
                     -gamepad1.left_stick_y,
@@ -60,17 +61,10 @@ public abstract class KovaCoquett extends OpMode {
                     false
             );
             telemetry.addData("Modo lento", "Desactivado");
-            robot.light.setPosition(0.5);
         }
 
         if (gamepad1.dpadUpWasPressed()) {
             robot.follower.setPose(new Pose());
-        }
-
-        if (robot.asistencia.getPosition() == 1) {
-            robot.light.setPosition(0.722);
-        } else if (robot.asistencia.getPosition() == 0.5) {
-            robot.light.setPosition(0.5);
         }
 
         // ------------------- INTAKE  -------------------
@@ -86,57 +80,57 @@ public abstract class KovaCoquett extends OpMode {
 
         robot.intake.update(intakeCmd);
 
+        /*if (gamepad2.a && oneTwoThree.seconds() < 3.0) {
+            robot.transferMotor.setPower(1);
+        }*/
 
         if (gamepad2.a) {
-            robot.ballStop.setPosition(0.3);
-            robot.transferMotor.setPower(1.0);
+            oneTwoThree.reset();
+            robot.ballStop.setPosition(BALL_STOP_OPEN);
             closed = false;
             closedTimer.reset();
         } else if (gamepad2.left_bumper) {
-            robot.ballStop.setPosition(0.3); //Open
+            robot.ballStop.setPosition(BALL_STOP_OPEN);
             closed = false;
             closedTimer.reset();
         } else if (gamepad1.a) {
-            robot.ballStop.setPosition(0.1); //Block
+            robot.ballStop.setPosition(BALL_STOP_CLOSE);
             closed = true;
         } else if (!closed && asistedDown && closedTimer.seconds() > 0.5) {
-            robot.ballStop.setPosition(0.1);
+            robot.ballStop.setPosition(0);
             closed = true;
-        }
-
-        if (gamepad1.a) {
-            robot.noStuck.setPower(-1);
-        } else if (gamepad1.b) {
-            robot.noStuck.setPower(1); //In rotation
-        } else {
-            robot.noStuck.setPower(0);
         }
 
         if (gamepad2.a) {
-            robot.asistencia.setPosition(0.5); //Save
+            robot.asistencia.setPosition(ASSIST_DOWN);
+            oneTwoThree.reset();
+            gamepad2.rumble(0,1,1000);
             asisted = false;
         }
 
         if (gamepad2.dpad_right) {
-            robot.asistencia.setPosition(1); //Up
+            robot.asistencia.setPosition(ASSIST_UP);
+            gamepad2.rumble(1,0,1000);
             asistedTimer.reset();
             asisted = true;
             asistedDown = false;
         }
         if (asisted && asistedTimer.seconds() > 0.25) {
-            robot.asistencia.setPosition(0.5); //Down
+            robot.asistencia.setPosition(ASSIST_DOWN);
             asisted = false;
             asistedDown = true;
         }
         if (gamepad2.dpad_left) {
-            robot.asistencia.setPosition(0.5); //Down
+            robot.asistencia.setPosition(ASSIST_DOWN);
             asisted = false;
             asistedDown = true;
         }
 
         if (gamepad2.a) {
-            robot.ballUp.setPower(0.8);
-        } else {
+            robot.ballUp.setPower(BALL_UP_UP);
+        }else if (gamepad1.a) {
+            robot.ballUp.setPower(BALL_UP_DOWN);
+        }else {
             robot.ballUp.setPower(0);
         }
 
@@ -170,16 +164,11 @@ public abstract class KovaCoquett extends OpMode {
             robot.turret.aimingLimelight = false;
             robot.torrettCoquette.setPower(-gamepad2.left_stick_x);
         }
-
-
-//        // ------------------- LIFT (LIBRO / SUBEBAJA) -------------------
-//        if (gamepad1.dpad_up) {
-//            robot.subiBajaMotor.setPower(0.5);
-//        } else if (gamepad1.dpad_down) {
-//            robot.subiBajaMotor.setPower(-1.0);
-//        } else {
-//            robot.subiBajaMotor.setPower(0.0);
+//        while (matchTimer.seconds()>100){
+//            gamepad1.rumble(1000);
+//            gamepad2.rumble(1000);
 //        }
+
 
         // ------------------- ROBOT -------------------
         robot.update();
@@ -188,8 +177,6 @@ public abstract class KovaCoquett extends OpMode {
         telemetry.addData("Para bolas", robot.intake.getGatePosition());
         telemetry.addData("Ángulo", Math.toDegrees(robot.follower.getPose().getHeading()));
         telemetry.addData("Detected", robot.isDetected());
-
-
         telemetry.update();
     }
 }

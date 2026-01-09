@@ -300,7 +300,7 @@ public class AutonomousClose extends OpMode {
                     robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
-                    robot.noStuck.setPower(-1);
+//                    robot.noStuck.setPower(-1);
 
                     double x = robot.follower.getPose().getX();
                     if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 20)) {
@@ -356,7 +356,7 @@ public class AutonomousClose extends OpMode {
                     robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
-                    robot.noStuck.setPower(-1);
+                    //robot.noStuck.setPower(-1);
                     robot.follower.followPath(GrabPGP, true);
 
                     double x = robot.follower.getPose().getX();
@@ -412,7 +412,7 @@ public class AutonomousClose extends OpMode {
                     robot.turret.aimingLimelight = false;
                     robot.ballStop.setPosition(0.1);
                     robot.intake.intakeOut();
-                    robot.noStuck.setPower(-1);
+                    //robot.noStuck.setPower(-1);
 
                     double x = robot.follower.getPose().getX();
                     if ((alliance == Alliance.RED  && x > 118) || (alliance == Alliance.BLUE && x < 16)) {

@@ -46,6 +46,7 @@ public class Intake {
 
         // --- AUTO SHOOT (gamepad2.a) ---
         if (cmd.autoShoot) {
+            intakeShootRollbackTimer.reset();
             if (cmd.autoShootJustPressed) {
                 if (hasBall) {
                     intakeShootRollbackTimer.reset();
@@ -53,17 +54,15 @@ public class Intake {
                 shooterFlickTimer.reset();
             }
 
-
-
-            if (intakeShootRollbackTimer.seconds() < 0.2) {
+            if (intakeShootRollbackTimer.seconds() >  3.0) {
                 intakePower = -1.0;
             } else {
-                intakePower = -0.4;
+                intakePower = -0.2;
             }
 
 
         }
-        // --- MANUAL INTAKE / INDEXER (gamepad2) ---
+        // --- MANUAL INTAKE / INDEXER (gamepad1) ---
         else if (cmd.manualIntakeForward) {
             intakePower = -1.0;
             transferPower = 1.0;
