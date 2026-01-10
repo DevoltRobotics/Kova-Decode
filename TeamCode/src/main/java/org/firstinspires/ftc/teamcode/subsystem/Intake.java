@@ -54,11 +54,11 @@ public class Intake {
                 shooterFlickTimer.reset();
             }
 
-            if (intakeShootRollbackTimer.seconds() >  3.0) {
+            /*if (intakeShootRollbackTimer.seconds() < 1.0) {
                 intakePower = -1.0;
             } else {
-                intakePower = -0.2;
-            }
+                intakePower = -0.4;
+            }*/
 
 
         }
@@ -72,6 +72,9 @@ public class Intake {
         }
 
         // --- AUTO BALL BLOCKING ---
+
+        //!ESTO ES LO DE QUE SACA!
+
         /*if (cmd.autoBlockEnabled && !cmd.shooterClearing) {
             if (hasBall && !cmd.manualIntakeForward) {
                 if (hasBall != previousHasBall) {

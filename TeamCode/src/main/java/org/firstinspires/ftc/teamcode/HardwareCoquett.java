@@ -32,6 +32,7 @@ public class HardwareCoquett {
     public CRServo ballUp;
     public Servo ballStop;
     public Servo asistencia;
+    public Servo luz;
     public DigitalChannel laserInput;
 
     boolean detected;
@@ -79,6 +80,7 @@ public class HardwareCoquett {
         ballUp = hardwareMap.get(CRServo.class, "subeBolas");
         ballStop = hardwareMap.get(Servo.class, "paraBolas");
         asistencia = hardwareMap.get(Servo.class, "asistencia");
+        luz = hardwareMap.get(Servo.class, "luz");
 
 
         // Sensor

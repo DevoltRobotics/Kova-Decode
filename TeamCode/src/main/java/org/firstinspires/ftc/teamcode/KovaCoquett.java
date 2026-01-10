@@ -20,7 +20,10 @@ public abstract class KovaCoquett extends OpMode {
     boolean asisted;
     boolean asistedDown;
     boolean closed;
-    private final ElapsedTime oneTwoThree = new ElapsedTime();
+    boolean intakeOn;
+    boolean intakeDelayActive = false;
+    boolean intakeRunning = false;
+    private final ElapsedTime intakeTimer = new ElapsedTime();
     private final ElapsedTime asistedTimer = new ElapsedTime();
     private final ElapsedTime closedTimer = new ElapsedTime();
     private final ElapsedTime matchTimer = new ElapsedTime();
@@ -34,6 +37,7 @@ public abstract class KovaCoquett extends OpMode {
     public void init() {
         robot.init(hardwareMap);
         robot.asistencia.setPosition(0);
+        robot.luz.setPosition(0.722);
     }
 
     @Override
@@ -80,30 +84,38 @@ public abstract class KovaCoquett extends OpMode {
 
         robot.intake.update(intakeCmd);
 
-        /*if (gamepad2.a && oneTwoThree.seconds() < 3.0) {
-            robot.transferMotor.setPower(1);
-        }*/
+        robot.luz.setPosition(0.722);
 
         if (gamepad2.a) {
-            oneTwoThree.reset();
+            robot.intakeMotor.setPower(-0.6);
+            robot.transferMotor.setPower(1.0);
+        }
+
+        if (gamepad2.right_trigger > 0.1) {
             robot.ballStop.setPosition(BALL_STOP_OPEN);
+            intakeTimer.reset();
+            intakeOn = true;
             closed = false;
             closedTimer.reset();
         } else if (gamepad2.left_bumper) {
             robot.ballStop.setPosition(BALL_STOP_OPEN);
+            intakeOn = false;
             closed = false;
             closedTimer.reset();
         } else if (gamepad1.a) {
+            intakeTimer.reset();
             robot.ballStop.setPosition(BALL_STOP_CLOSE);
+            intakeOn = false;
             closed = true;
         } else if (!closed && asistedDown && closedTimer.seconds() > 0.5) {
+            intakeOn = false;
             robot.ballStop.setPosition(0);
             closed = true;
         }
 
         if (gamepad2.a) {
             robot.asistencia.setPosition(ASSIST_DOWN);
-            oneTwoThree.reset();
+            intakeOn = true;
             gamepad2.rumble(0,1,1000);
             asisted = false;
         }
