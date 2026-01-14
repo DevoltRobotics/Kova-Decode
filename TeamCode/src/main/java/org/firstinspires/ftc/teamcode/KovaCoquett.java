@@ -87,7 +87,7 @@ public abstract class KovaCoquett extends OpMode {
         robot.luz.setPosition(0.722);
 
         if (gamepad2.a) {
-            robot.intakeMotor.setPower(-0.6);
+            robot.intakeMotor.setPower(-0.8);
             robot.transferMotor.setPower(1.0);
         }
 
