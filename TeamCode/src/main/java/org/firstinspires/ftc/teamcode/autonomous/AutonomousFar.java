@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
+import static org.firstinspires.ftc.teamcode.Const.BALL_UP_UP;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -212,7 +217,7 @@ public class AutonomousFar extends OpMode {
                 robot.follower.followPath(InitPos);
                 robot.shooter.aimingLimelight = true;
                 if (autoTime.seconds() >= 1.5) {
-                    robot.ballUp.setPower(0.8);
+                    robot.ballUp.setPower(BALL_UP_UP);
                     robot.intakeMotor.setPower(-1);
                     if (!robot.isDetected()) {
                         if (!asistenciaDelayActive) {
@@ -220,7 +225,7 @@ public class AutonomousFar extends OpMode {
                             asistenciaDelayTimer.reset();
                         }
                         if (asistenciaDelayTimer.seconds() >= 2) {
-                            robot.asistencia.setPosition(1);
+                            robot.asistencia.setPosition(ASSIST_UP);
                             setPathState(1);
                         }
                     } else {
@@ -235,11 +240,11 @@ public class AutonomousFar extends OpMode {
                 robot.turret.aimingLimelight = false;
 
                 if (!robot.follower.isBusy()) {
-                    robot.asistencia.setPosition(0.5);
+                    robot.asistencia.setPosition(ASSIST_DOWN);
                     robot.follower.followPath(GrabPPG, true);
                     robot.shooter.aimingLimelight = false;
                     robot.turret.aimingLimelight = false;
-                    robot.ballStop.setPosition(0.1);
+                    robot.ballStop.setPosition(BALL_STOP_OPEN);
                     robot.intake.intakeOut();
                     //robot.noStuck.setPower(-1);
 
@@ -269,8 +274,8 @@ public class AutonomousFar extends OpMode {
 
                     if (backToShooter) {
 
-                        robot.ballStop.setPosition(0.3);  // Open
-                        robot.ballUp.setPower(0.8);
+                        robot.ballStop.setPosition(BALL_STOP_OPEN);  // Open
+                        robot.ballUp.setPower(BALL_UP_UP);
                         robot.intakeMotor.setPower(-1);
 
                         if (!robot.isDetected()) {
@@ -279,7 +284,7 @@ public class AutonomousFar extends OpMode {
                                 asistenciaDelayTimer.reset();
                             }
                             if (asistenciaDelayTimer.seconds() >= 2) {
-                                robot.asistencia.setPosition(1);
+                                robot.asistencia.setPosition(ASSIST_UP);
                                 setPathState(3);
                             }
                         } else {
@@ -290,7 +295,7 @@ public class AutonomousFar extends OpMode {
                 break;
 
             case 3:
-                robot.asistencia.setPosition(0);
+                robot.asistencia.setPosition(ASSIST_DOWN);
                 robot.follower.setMaxPower(0.6);
                 robot.shooter.aimingLimelight = false;
                 robot.turret.aimingLimelight = false;
@@ -298,7 +303,7 @@ public class AutonomousFar extends OpMode {
                     robot.follower.followPath(GrabPGP, true);
                     robot.shooter.aimingLimelight = false;
                     robot.turret.aimingLimelight = false;
-                    robot.ballStop.setPosition(0.1);
+                    robot.ballStop.setPosition(BALL_STOP_OPEN);
                     robot.intake.intakeOut();
                     //robot.noStuck.setPower(-1);
 
@@ -328,8 +333,8 @@ public class AutonomousFar extends OpMode {
 
                     if (backToShooter2) {
 
-                        robot.ballStop.setPosition(0.3);  // Open
-                        robot.ballUp.setPower(0.8);
+                        robot.ballStop.setPosition(BALL_STOP_OPEN);  // Open
+                        robot.ballUp.setPower(BALL_UP_UP);
                         robot.intakeMotor.setPower(-1);
 
                         if (!robot.isDetected()) {
@@ -338,7 +343,7 @@ public class AutonomousFar extends OpMode {
                                 asistenciaDelayTimer.reset();
                             }
                             if (asistenciaDelayTimer.seconds() >= 2) {
-                                robot.asistencia.setPosition(1);
+                                robot.asistencia.setPosition(ASSIST_UP);
                                 setPathState(5);
                             }
                         } else {

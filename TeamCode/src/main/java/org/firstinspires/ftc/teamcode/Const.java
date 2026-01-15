@@ -10,6 +10,4 @@ public class Const {
     public static final double BALL_UP_UP = 0.7;
     public static final double BALL_UP_DOWN = -1;
 
-
-
 }

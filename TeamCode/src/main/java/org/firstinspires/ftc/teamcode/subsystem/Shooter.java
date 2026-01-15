@@ -22,6 +22,7 @@ public class Shooter {
 
         lut.createLUT();
     }
+    //ToDo: Adjust Far Shooting
 
     public static PIDFCoefficients shooterCoeffs = new PIDFCoefficients(
             0.01, 0, 0, 0

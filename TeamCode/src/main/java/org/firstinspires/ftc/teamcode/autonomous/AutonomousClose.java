@@ -282,14 +282,17 @@ public class AutonomousClose extends OpMode {
                     robot.intakeMotor.setPower(-1);
                     robot.transferMotor.setPower(0.8);
                     if (!robot.isDetected()) {
+
+                        if (!asistenciaDelayActive) {
+                            asistenciaDelayActive = true;
+                            asistenciaDelayTimer.reset();
+                        }
+
                         if (asistenciaDelayTimer.seconds() >= 1.2) {
-                            if (!asistenciaDelayActive) {
-                                asistenciaDelayActive = true;
-                                asistenciaDelayTimer.reset();
-                            }
                             robot.asistencia.setPosition(ASSIST_UP);
 
                         }
+
                         if (asistenciaDelayTimer.seconds() >= 1.5) {
                             setPathState(1);
                             robot.ballStop.setPosition(BALL_STOP_CLOSE);
@@ -362,6 +365,7 @@ public class AutonomousClose extends OpMode {
 
             case 3:
                 robot.ballStop.setPosition(BALL_STOP_CLOSE);
+
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
                     robot.follower.followPath(GrabPGP, true);
@@ -383,29 +387,35 @@ public class AutonomousClose extends OpMode {
             case 4:
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
+                robot.intakeMotor.setPower(0);
+                robot.transferMotor.setPower(0);
+                robot.ballUp.setPower(0);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
+
                 if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(ShootPGP, true);
-                    robot.intake.stopIntake();
+
+                    robot.follower.followPath(ShootPGP, false);
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
-                    if ((alliance == Alliance.RED  && x < 85) || (alliance == Alliance.BLUE && x < 58)) {
 
-                        robot.ballStop.setPosition(0.3);  // Open
-                        robot.ballUp.setPower(0.8);
+                    if ((alliance == Alliance.RED  && x < 84) || (alliance == Alliance.BLUE && x > 58)) {
                         robot.intakeMotor.setPower(-1);
+                        robot.transferMotor.setPower(0.8);
+                        robot.ballUp.setPower(BALL_UP_UP);
 
                         if (!robot.isDetected()) {
-                            if (!asistenciaDelayActive) {
-                                asistenciaDelayActive = true;
-                                asistenciaDelayTimer.reset();
-                            }
-                            if (asistenciaDelayTimer.seconds() >= 0.6) {
-                                robot.asistencia.setPosition(1);
+                            if (asistenciaDelayTimer.seconds() >= 1) {
+                                if (!asistenciaDelayActive) {
+                                    asistenciaDelayActive = true;
+                                    asistenciaDelayTimer.reset();
+                                }
+                                robot.asistencia.setPosition(ASSIST_UP);
 
                             }
-                            if (asistenciaDelayTimer.seconds() >= 2) {
-                                setPathState(5);
+                            if (asistenciaDelayTimer.seconds() >= 1.5) {
+                                setPathState(3);
+                                robot.ballStop.setPosition(BALL_STOP_CLOSE);
                             }
                         } else {
                             asistenciaDelayActive = false;
@@ -413,7 +423,7 @@ public class AutonomousClose extends OpMode {
                     }
                 }
                 break;
-
+                //Refactor ends here, Exito Andrea ToDo: Test and adjust
             case 5:
                 robot.follower.setMaxPower(1);
 
