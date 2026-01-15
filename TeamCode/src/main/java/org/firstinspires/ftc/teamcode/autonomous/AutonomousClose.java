@@ -1,5 +1,12 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
+import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
+import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
+import static org.firstinspires.ftc.teamcode.Const.BALL_UP_UP;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -73,7 +80,7 @@ public class AutonomousClose extends OpMode {
 
         paths = new Paths(robot.follower, alliance);
         robot.follower.setMaxPower(1);
-        pathState = -1;
+        pathState = 0;
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
     }
@@ -116,7 +123,7 @@ public class AutonomousClose extends OpMode {
                                 new BezierCurve(
                                         new Pose(50.000, 93.000), //Punto Inicial de la curva, es decir, el punto final del path pasado
                                         new Pose(55.000, 80.000), //Punto de control
-                                        new Pose(21.000, 84.000) //Punto final de la curva
+                                        new Pose(19.000, 84.000) //Punto final de la curva
                                 )
                         )
                         .setLinearHeadingInterpolation(Math.toRadians(144), Math.toRadians(180))
@@ -263,26 +270,29 @@ public class AutonomousClose extends OpMode {
         switch (pathState) {
             case 0:
                 robot.follower.setMaxPower(1);
-                robot.ballStop.setPosition(0.3);  // Open
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
+                robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
                 if(!pathActivation){
                     robot.follower.followPath(InitShoot);
                     pathActivation = true;
                 }
-                robot.shooter.aimingLimelight = true;
-                if (autoTime.seconds() >= 1) {
-                    robot.ballUp.setPower(0.8);
+                if (autoTime.seconds() >= 2) {
+                    robot.ballUp.setPower(BALL_UP_UP);
                     robot.intakeMotor.setPower(-1);
+                    robot.transferMotor.setPower(0.8);
                     if (!robot.isDetected()) {
-                        if (!asistenciaDelayActive) {
-                            asistenciaDelayActive = true;
-                            asistenciaDelayTimer.reset();
-                        }
-                        if (asistenciaDelayTimer.seconds() >= 0.6) {
-                            robot.asistencia.setPosition(1);
+                        if (asistenciaDelayTimer.seconds() >= 1.2) {
+                            if (!asistenciaDelayActive) {
+                                asistenciaDelayActive = true;
+                                asistenciaDelayTimer.reset();
+                            }
+                            robot.asistencia.setPosition(ASSIST_UP);
 
                         }
-                        if (asistenciaDelayTimer.seconds() >= 2) {
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
                             setPathState(1);
+                            robot.ballStop.setPosition(BALL_STOP_CLOSE);
                         }
                     } else {
                         asistenciaDelayActive = false;
@@ -293,17 +303,18 @@ public class AutonomousClose extends OpMode {
             case 1:
                 robot.follower.setMaxPower(1);
                 pathActivation = false;
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
                 if (!robot.follower.isBusy()) {
-                    robot.asistencia.setPosition(0.5);
+                    robot.asistencia.setPosition(ASSIST_DOWN);
                     robot.follower.followPath(GrabPPG, true);
-                    robot.shooter.aimingLimelight = false;
+                    robot.ballUp.setPower(BALL_UP_DOWN);
                     robot.turret.aimingLimelight = false;
-                    robot.ballStop.setPosition(0.1);
-                    robot.intake.intakeOut();
-//                    robot.noStuck.setPower(-1);
+                    robot.intakeMotor.setPower(-1);
+                    robot.ballUp.setPower(0);
+                    robot.transferMotor.setPower(1);
 
                     double x = robot.follower.getPose().getX();
-                    if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 20)) {
+                    if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 25)) {
                         setPathState(2);
                     }
                 }
@@ -312,32 +323,35 @@ public class AutonomousClose extends OpMode {
             case 2:
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
+                robot.intakeMotor.setPower(0);
+                robot.transferMotor.setPower(0);
+                robot.ballUp.setPower(0);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
 
                 if (!robot.follower.isBusy()) {
 
                     robot.follower.followPath(ShootPPG, false);
-                    robot.intake.stopIntake();
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
 
                     if ((alliance == Alliance.RED  && x < 84) || (alliance == Alliance.BLUE && x > 58)) {
-
-                        robot.ballStop.setPosition(0.3);  // Open
-                        robot.ballUp.setPower(0.8);
                         robot.intakeMotor.setPower(-1);
+                        robot.transferMotor.setPower(0.8);
+                        robot.ballUp.setPower(BALL_UP_UP);
 
                         if (!robot.isDetected()) {
-                            if (!asistenciaDelayActive) {
-                                asistenciaDelayActive = true;
-                                asistenciaDelayTimer.reset();
-                            }
-                            if (asistenciaDelayTimer.seconds() >= 0.6) {
-                                robot.asistencia.setPosition(1);
+                            if (asistenciaDelayTimer.seconds() >= 1) {
+                                if (!asistenciaDelayActive) {
+                                    asistenciaDelayActive = true;
+                                    asistenciaDelayTimer.reset();
+                                }
+                                robot.asistencia.setPosition(ASSIST_UP);
 
                             }
-                            if (asistenciaDelayTimer.seconds() >= 2) {
+                            if (asistenciaDelayTimer.seconds() >= 1.5) {
                                 setPathState(3);
+                                robot.ballStop.setPosition(BALL_STOP_CLOSE);
                             }
                         } else {
                             asistenciaDelayActive = false;
@@ -347,17 +361,15 @@ public class AutonomousClose extends OpMode {
                 break;
 
             case 3:
-                robot.asistencia.setPosition(0);
-                robot.follower.setMaxPower(0.8);
-                robot.shooter.aimingLimelight = false;
-                robot.turret.aimingLimelight = false;
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
                 if (!robot.follower.isBusy()) {
-                    robot.shooter.aimingLimelight = false;
-                    robot.turret.aimingLimelight = false;
-                    robot.ballStop.setPosition(0.1);
-                    robot.intake.intakeOut();
-                    //robot.noStuck.setPower(-1);
+                    robot.asistencia.setPosition(ASSIST_DOWN);
                     robot.follower.followPath(GrabPGP, true);
+                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.turret.aimingLimelight = false;
+                    robot.intakeMotor.setPower(-1);
+                    robot.ballUp.setPower(0);
+                    robot.transferMotor.setPower(1);
 
                     double x = robot.follower.getPose().getX();
                     boolean reachedSecondStack = (alliance == Alliance.RED  && x > 118) || (alliance == Alliance.BLUE && x < 19);
