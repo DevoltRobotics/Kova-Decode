@@ -88,8 +88,8 @@ public class Intake {
             }
         }*/
 
-        robot.intakeMotor.setPower(intakePower);
-        robot.transferMotor.setPower(transferPower);
+        robot.transferMotor.setPower(intakePower);
+        robot.intakeMotor.setPower(transferPower);
 
         previousHasBall = hasBall;
     }
@@ -97,18 +97,18 @@ public class Intake {
     // ------------- Auto Methods -------------
 
     public void intakeIn() {
-        robot.intakeMotor.setPower(1.0);
         robot.transferMotor.setPower(1.0);
+        robot.intakeMotor.setPower(1.0);
     }
 
     public void intakeOut() {
-        robot.intakeMotor.setPower(-1.0);
         robot.transferMotor.setPower(-1.0);
+        robot.intakeMotor.setPower(-1.0);
     }
 
     public void stopIntake() {
-        robot.intakeMotor.setPower(0.0);
         robot.transferMotor.setPower(0.0);
+        robot.intakeMotor.setPower(0.0);
     }
 
     public void indexerUp() {

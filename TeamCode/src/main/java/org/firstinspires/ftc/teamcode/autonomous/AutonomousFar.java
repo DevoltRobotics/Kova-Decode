@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
+import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_UP_UP;
 
 import com.bylazar.configurables.annotations.Configurable;
@@ -205,28 +207,29 @@ public class AutonomousFar extends OpMode {
 
     public int autonomousPathUpdate() {
         switch (pathState) {
-            case -1:
-                if(stateTime.seconds() >= 8) {
-                    setPathState(0);
-                }
-
-                break;
 
             case 0:
 
                 robot.follower.followPath(InitPos);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
                 robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
+
                 if (autoTime.seconds() >= 1.5) {
                     robot.ballUp.setPower(BALL_UP_UP);
-                    robot.intakeMotor.setPower(-1);
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(1);
                     if (!robot.isDetected()) {
+
                         if (!asistenciaDelayActive) {
                             asistenciaDelayActive = true;
                             asistenciaDelayTimer.reset();
                         }
+
                         if (asistenciaDelayTimer.seconds() >= 2) {
                             robot.asistencia.setPosition(ASSIST_UP);
                             setPathState(1);
+                            robot.ballStop.setPosition(BALL_STOP_CLOSE);
                         }
                     } else {
                         asistenciaDelayActive = false;
@@ -235,18 +238,16 @@ public class AutonomousFar extends OpMode {
                 break;
 
             case 1:
-                robot.follower.setMaxPower(0.6);
-                robot.shooter.aimingLimelight = false;
+                robot.follower.setMaxPower(1);
                 robot.turret.aimingLimelight = false;
 
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
                     robot.follower.followPath(GrabPPG, true);
-                    robot.shooter.aimingLimelight = false;
+                    robot.ballUp.setPower(BALL_UP_DOWN);
                     robot.turret.aimingLimelight = false;
-                    robot.ballStop.setPosition(BALL_STOP_OPEN);
-                    robot.intake.intakeOut();
-                    //robot.noStuck.setPower(-1);
+                    robot.transferMotor.setPower(-1);
+                    robot.intakeMotor.setPower(1);
 
                     double x = robot.follower.getPose().getX();
                     boolean reachedStack = (alliance == Alliance.RED  && x > 125) || (alliance == Alliance.BLUE && x < 16);
@@ -260,11 +261,14 @@ public class AutonomousFar extends OpMode {
             case 2:
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
+                robot.transferMotor.setPower(0);
+                robot.intakeMotor.setPower(0);
+                robot.ballUp.setPower(0);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
 
                 if (!robot.follower.isBusy()) {
 
                     robot.follower.followPath(ShootPPG, false);
-                    robot.intake.stopIntake();
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
@@ -276,7 +280,8 @@ public class AutonomousFar extends OpMode {
 
                         robot.ballStop.setPosition(BALL_STOP_OPEN);  // Open
                         robot.ballUp.setPower(BALL_UP_UP);
-                        robot.intakeMotor.setPower(-1);
+                        robot.transferMotor.setPower(-0.8);
+                        robot.intakeMotor.setPower(1);
 
                         if (!robot.isDetected()) {
                             if (!asistenciaDelayActive) {
@@ -286,6 +291,7 @@ public class AutonomousFar extends OpMode {
                             if (asistenciaDelayTimer.seconds() >= 2) {
                                 robot.asistencia.setPosition(ASSIST_UP);
                                 setPathState(3);
+                                robot.ballStop.setPosition(BALL_STOP_CLOSE);
                             }
                         } else {
                             asistenciaDelayActive = false;
@@ -296,16 +302,16 @@ public class AutonomousFar extends OpMode {
 
             case 3:
                 robot.asistencia.setPosition(ASSIST_DOWN);
-                robot.follower.setMaxPower(0.6);
-                robot.shooter.aimingLimelight = false;
+                robot.follower.setMaxPower(1);
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
                 robot.turret.aimingLimelight = false;
                 if (!robot.follower.isBusy()) {
+                    robot.asistencia.setPosition(ASSIST_DOWN);
                     robot.follower.followPath(GrabPGP, true);
-                    robot.shooter.aimingLimelight = false;
+                    robot.ballUp.setPower(BALL_UP_DOWN);
                     robot.turret.aimingLimelight = false;
-                    robot.ballStop.setPosition(BALL_STOP_OPEN);
-                    robot.intake.intakeOut();
-                    //robot.noStuck.setPower(-1);
+                    robot.transferMotor.setPower(-1);
+                    robot.intakeMotor.setPower(1);
 
                     double x = robot.follower.getPose().getX();
                     boolean reachedSecondStack =
@@ -321,9 +327,14 @@ public class AutonomousFar extends OpMode {
             case 4:
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
+                robot.transferMotor.setPower(0);
+                robot.intakeMotor.setPower(0);
+                robot.ballUp.setPower(0);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
+
                 if (!robot.follower.isBusy()) {
+
                     robot.follower.followPath(ShootPGP, true);
-                    robot.intake.stopIntake();
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
@@ -333,9 +344,9 @@ public class AutonomousFar extends OpMode {
 
                     if (backToShooter2) {
 
-                        robot.ballStop.setPosition(BALL_STOP_OPEN);  // Open
+                        robot.transferMotor.setPower(-1);
+                        robot.intakeMotor.setPower(0.8);
                         robot.ballUp.setPower(BALL_UP_UP);
-                        robot.intakeMotor.setPower(-1);
 
                         if (!robot.isDetected()) {
                             if (!asistenciaDelayActive) {

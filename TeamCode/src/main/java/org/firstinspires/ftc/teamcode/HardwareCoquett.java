@@ -21,11 +21,11 @@ import org.firstinspires.ftc.teamcode.subsystem.Turret;
 public class HardwareCoquett {
 
     // Motores principales
-    public DcMotor intakeMotor;
+    public DcMotor transferMotor;
 
     public DcMotorEx shooterMotor;
     public DcMotorEx disparadorMotor;
-    public DcMotor transferMotor;
+    public DcMotor intakeMotor;
 
     // Servos
     public CRServo torrettCoquette;
@@ -63,7 +63,7 @@ public class HardwareCoquett {
         follower = Constants.createFollower(hardwareMap);
 
         // Motores
-        intakeMotor = hardwareMap.get(DcMotor.class, "intake");
+        transferMotor = hardwareMap.get(DcMotor.class, "intake");
 
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");
         disparadorMotor = hardwareMap.get(DcMotorEx.class, "disparador");
@@ -72,7 +72,7 @@ public class HardwareCoquett {
 
         disparadorMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        transferMotor=hardwareMap.get(DcMotor.class, "transfer");
+        intakeMotor =hardwareMap.get(DcMotor.class, "transfer");
 
 
         // Servos
