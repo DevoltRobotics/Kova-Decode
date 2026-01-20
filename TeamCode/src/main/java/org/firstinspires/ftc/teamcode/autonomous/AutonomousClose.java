@@ -234,9 +234,12 @@ public class AutonomousClose extends OpMode {
                 ShootPGP = follower
                         .pathBuilder()
                         .addPath(
-                                new BezierLine(new Pose(136.000, 58.000), new Pose(83.000, 82.000))
-                        )
-                        .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(38))
+                                new BezierCurve(
+                                        new Pose(136.000, 58.000),
+                                        new Pose(109.000, 56.000),
+                                        new Pose(83.000, 82.000)
+                                )
+                        ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(38))
                         .build();
 
                 GrabGPP = follower
@@ -292,7 +295,7 @@ public class AutonomousClose extends OpMode {
                             asistenciaDelayTimer.reset();
                         }
 
-                        if (asistenciaDelayTimer.seconds() >= 1) {
+                        if (asistenciaDelayTimer.seconds() >= 1.0) {
                             robot.asistencia.setPosition(ASSIST_UP);
 
                         }
@@ -327,11 +330,11 @@ public class AutonomousClose extends OpMode {
                 break;
 
             case 2:
-                robot.shooter.aimingLimelight = true;
-                robot.turret.aimingLimelight = true;
                 robot.transferMotor.setPower(0);
                 robot.intakeMotor.setPower(0);
                 robot.ballUp.setPower(0);
+                robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
                 robot.ballStop.setPosition(BALL_STOP_OPEN);
 
                 if (!robot.follower.isBusy()) {
@@ -341,13 +344,13 @@ public class AutonomousClose extends OpMode {
 
                     double x = robot.follower.getPose().getX();
 
-                    if ((alliance == Alliance.RED  && x < 84) || (alliance == Alliance.BLUE && x > 58)) {
+                    if ((alliance == Alliance.RED  && x < 85) || (alliance == Alliance.BLUE && x > 58)) {
                         robot.transferMotor.setPower(-0.8);
                         robot.intakeMotor.setPower(1);
                         robot.ballUp.setPower(BALL_UP_UP);
 
                         if (!robot.isDetected()) {
-                            if (asistenciaDelayTimer.seconds() >= 1) {
+                            if (asistenciaDelayTimer.seconds() >= 1.5) {
                                 if (!asistenciaDelayActive) {
                                     asistenciaDelayActive = true;
                                     asistenciaDelayTimer.reset();
@@ -368,15 +371,18 @@ public class AutonomousClose extends OpMode {
 
             case 3:
                 robot.follower.setMaxPower(1);
+                robot.transferMotor.setPower(0);
+                robot.intakeMotor.setPower(0);
+                robot.ballUp.setPower(0);
                 pathActivation = false;
                 robot.ballStop.setPosition(BALL_STOP_CLOSE);
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
+                    robot.transferMotor.setPower(-1);
+                    robot.intakeMotor.setPower(1);
                     robot.follower.followPath(GrabPGP, true);
                     robot.ballUp.setPower(BALL_UP_DOWN);
                     robot.turret.aimingLimelight = false;
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
 
                     double x = robot.follower.getPose().getX();
                     boolean reachedSecondStack = (alliance == Alliance.RED  && x > 118) || (alliance == Alliance.BLUE && x < 19);
@@ -387,11 +393,11 @@ public class AutonomousClose extends OpMode {
                 break;
 
             case 4:
-                robot.shooter.aimingLimelight = true;
-                robot.turret.aimingLimelight = true;
                 robot.transferMotor.setPower(0);
                 robot.intakeMotor.setPower(0);
                 robot.ballUp.setPower(0);
+                robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
                 robot.ballStop.setPosition(BALL_STOP_OPEN);
 
                 if (!robot.follower.isBusy()) {
@@ -416,7 +422,7 @@ public class AutonomousClose extends OpMode {
 
                             }
                             if (asistenciaDelayTimer.seconds() >= 1.5) {
-                                setPathState(5);
+                                setPathState(7);
                                 robot.ballStop.setPosition(BALL_STOP_CLOSE);
                             }
                         } else {
@@ -428,15 +434,17 @@ public class AutonomousClose extends OpMode {
                 //Refactor ends here, Exito Andrea ToDo: Test and adjust
             case 5:
                 robot.follower.setMaxPower(1);
+                robot.transferMotor.setPower(-1);
+                robot.intakeMotor.setPower(1);
 
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(0.5);
-                    robot.follower.followPath(GrabGPP, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
-                    robot.turret.aimingLimelight = false;
                     robot.transferMotor.setPower(-1);
                     robot.ballUp.setPower(0);
                     robot.intakeMotor.setPower(1);
+                    robot.follower.followPath(GrabGPP, true);
+                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.turret.aimingLimelight = false;
 
                     double x = robot.follower.getPose().getX();
                     if ((alliance == Alliance.RED  && x > 118) || (alliance == Alliance.BLUE && x < 19)) {
@@ -445,12 +453,12 @@ public class AutonomousClose extends OpMode {
                 }
                 break;
             case 6:
-                robot.shooter.aimingLimelight = true;
-                robot.turret.aimingLimelight = true;
                 robot.transferMotor.setPower(0);
                 robot.intakeMotor.setPower(0);
                 robot.ballUp.setPower(0);
                 robot.ballStop.setPosition(BALL_STOP_OPEN);
+                robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
                 if (!robot.follower.isBusy()) {
                     robot.follower.followPath(ShootGPP, true);
                     robot.intake.stopIntake();

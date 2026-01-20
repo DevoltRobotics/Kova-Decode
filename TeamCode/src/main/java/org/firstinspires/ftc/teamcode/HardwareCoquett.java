@@ -30,6 +30,7 @@ public class HardwareCoquett {
     // Servos
     public CRServo torrettCoquette;
     public CRServo ballUp;
+    public CRServo elevacionServo;
     public Servo ballStop;
     public Servo asistencia;
     public Servo luz;
@@ -78,6 +79,7 @@ public class HardwareCoquett {
         // Servos
         torrettCoquette = hardwareMap.get(CRServo.class, "torreta");
         ballUp = hardwareMap.get(CRServo.class, "subeBolas");
+        elevacionServo = hardwareMap.get(CRServo.class,"elevacion");
         ballStop = hardwareMap.get(Servo.class, "paraBolas");
         asistencia = hardwareMap.get(Servo.class, "asistencia");
         luz = hardwareMap.get(Servo.class, "luz");

@@ -182,6 +182,17 @@ public abstract class KovaCoquett extends OpMode {
 //        }
 
 
+        // ------------------- ELEVATOR -------------------
+
+        if (gamepad1.dpad_right)
+            robot.elevacionServo.setPower(1.0);
+        else if (gamepad1.dpad_left) {
+            robot.elevacionServo.setPower(-1.0);
+        }else {
+            robot.elevacionServo.setPower(0.0);
+        }
+
+
         // ------------------- ROBOT -------------------
         robot.update();
         // ------------------- TELEMETRY -------------------
