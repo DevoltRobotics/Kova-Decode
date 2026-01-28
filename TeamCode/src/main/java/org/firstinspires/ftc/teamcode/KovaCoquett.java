@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_CLOSE;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
@@ -93,18 +95,21 @@ public abstract class KovaCoquett extends OpMode {
 
         if (gamepad2.right_trigger > 0.1) {
             robot.ballStop.setPosition(BALL_STOP_OPEN);
+            robot.ballAlto.setPosition(BALL_ALTO_OPEN);
             intakeTimer.reset();
             intakeOn = true;
             closed = false;
             closedTimer.reset();
         } else if (gamepad2.left_bumper) {
             robot.ballStop.setPosition(BALL_STOP_OPEN);
+            robot.ballAlto.setPosition(BALL_ALTO_OPEN);
             intakeOn = false;
             closed = false;
             closedTimer.reset();
         } else if (gamepad1.a) {
             intakeTimer.reset();
             robot.ballStop.setPosition(BALL_STOP_CLOSE);
+            robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
             intakeOn = false;
             closed = true;
         } else if (!closed && asistedDown && closedTimer.seconds() > 0.5) {
