@@ -94,22 +94,22 @@ public abstract class KovaCoquett extends OpMode {
         }
 
         if (gamepad2.right_trigger > 0.1) {
-            robot.ballStop.setPosition(BALL_STOP_OPEN);
-            robot.ballAlto.setPosition(BALL_ALTO_OPEN);
+            robot.ballStop.setPosition(0);
+            robot.ballAlto.setPosition(0.4);
             intakeTimer.reset();
             intakeOn = true;
             closed = false;
             closedTimer.reset();
         } else if (gamepad2.left_bumper) {
-            robot.ballStop.setPosition(BALL_STOP_OPEN);
-            robot.ballAlto.setPosition(BALL_ALTO_OPEN);
+            robot.ballStop.setPosition(0);
+            robot.ballAlto.setPosition(0.4);
             intakeOn = false;
             closed = false;
             closedTimer.reset();
         } else if (gamepad1.a) {
             intakeTimer.reset();
-            robot.ballStop.setPosition(BALL_STOP_CLOSE);
-            robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+            robot.ballStop.setPosition(0.4);
+            robot.ballAlto.setPosition(0);
             intakeOn = false;
             closed = true;
         } else if (!closed && asistedDown && closedTimer.seconds() > 0.5) {
@@ -149,6 +149,14 @@ public abstract class KovaCoquett extends OpMode {
             robot.ballUp.setPower(BALL_UP_DOWN);
         }else {
             robot.ballUp.setPower(0);
+        }
+
+        if (gamepad2.y) {
+
+            robot.ballAlto.setPosition(0);
+        }else if (gamepad2.x){
+
+            robot.ballAlto.setPosition(0.5);
         }
 
         // ------------------- SHOOTER -------------------
