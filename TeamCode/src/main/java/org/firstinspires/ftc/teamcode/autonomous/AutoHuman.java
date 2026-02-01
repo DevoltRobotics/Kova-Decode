@@ -266,6 +266,7 @@ public class AutoHuman extends OpMode {
         }
     }
 
+//ESTE AUTONOMO AGARRA LAS PELOTAS DEL HUMAN PLAYER, PERO HAY QUE AJUSTAR
 
     public int autonomousPathUpdate() {
         switch (pathState) {

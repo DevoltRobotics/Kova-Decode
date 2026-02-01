@@ -272,7 +272,7 @@ public class AutonomousClose extends OpMode {
             }
         }
     }
-
+//FALTA AJUSTAR CON EL NUEVO SERVO DE ALTO PELOTAS
     public int autonomousPathUpdate() {
         switch (pathState) {
             case 0:
