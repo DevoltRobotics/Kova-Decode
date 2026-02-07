@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 public class Const {
     public static final double BALL_STOP_CLOSE = 0.5;
-    public static final double BALL_STOP_OPEN = 0;
-    public static final double BALL_ALTO_CLOSE = 0.5;
-    public static final double BALL_ALTO_OPEN = 0;
+    public static final double BALL_STOP_OPEN = 0.1;
+    public static final double BALL_ALTO_CLOSE = 0.2;
+    public static final double BALL_ALTO_OPEN = 0.7;
 
     public static final double ASSIST_DOWN = 0.5;
     public static final double ASSIST_UP = 1;

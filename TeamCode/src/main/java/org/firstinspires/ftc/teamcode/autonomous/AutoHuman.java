@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_CLOSE;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
@@ -38,6 +40,7 @@ public class AutoHuman extends OpMode {
     public static PathChain GrabHuman2;
     public static PathChain ShootHuman;
     public static PathChain LeavePos;
+    boolean pathActivation;
     private final ElapsedTime autoTime = new ElapsedTime();
     private final ElapsedTime stateTime = new ElapsedTime();
 
@@ -266,31 +269,45 @@ public class AutoHuman extends OpMode {
         }
     }
 
-//ESTE AUTONOMO AGARRA LAS PELOTAS DEL HUMAN PLAYER, PERO HAY QUE AJUSTAR
+    //CAMBIAR COORDS
 
     public int autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                robot.follower.followPath(InitPos);
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
-                robot.shooter.aimingLimelight = true;
-                robot.turret.aimingLimelight = true;
+                robot.follower.setMaxPower(1);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
+                robot.ballAlto.setPosition(BALL_ALTO_OPEN);
+                robot.ballStop.setPosition(0.1);
+                robot.ballAlto.setPosition(0.7);
 
-                if (autoTime.seconds() >= 4.0) {
-                    robot.ballUp.setPower(BALL_UP_UP);
-                    robot.transferMotor.setPower(-0.8);
+                if(!pathActivation){
+                    robot.follower.followPath(InitPos);
+                    pathActivation = true;
+                }
+                if (autoTime.seconds() >= 2.5) {
+                    robot.ballUp.setPower(1);
+                    robot.transferMotor.setPower(-0.6);
                     robot.intakeMotor.setPower(1);
-                    if (!robot.isDetected()) {
+
+                    if (!robot.isBallDetected()) {
 
                         if (!asistenciaDelayActive) {
                             asistenciaDelayActive = true;
                             asistenciaDelayTimer.reset();
                         }
 
-                        if (asistenciaDelayTimer.seconds() >= 3) {
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
                             robot.asistencia.setPosition(ASSIST_UP);
+
+                        }
+
+                        if (asistenciaDelayTimer.seconds() >= 2) {
+                            pathActivation = false;
                             setPathState(1);
+
+                            robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                            robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                            robot.asistencia.setPosition(ASSIST_DOWN);
                         }
                     } else {
                         asistenciaDelayActive = false;
@@ -299,64 +316,66 @@ public class AutoHuman extends OpMode {
                 break;
 
             case 1:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballStop.setPosition(0.4);
-                robot.ballAlto.setPosition(0);
-                robot.follower.setMaxPower(1);
                 robot.turret.aimingLimelight = false;
+                robot.follower.setMaxPower(1);
 
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+
+                if(!pathActivation){
+                    robot.follower.followPath(GrabPPG, true);
+                    pathActivation = true;
+                }
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(GrabPPG, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean reachedStack = (alliance == Alliance.RED  && x > 131) || (alliance == Alliance.BLUE && x < 13);
-
-                    if (reachedStack) {
+                    if ((alliance == Alliance.RED  && x > 137) || (alliance == Alliance.BLUE && x < 10)) {
+                        pathActivation = true;
                         setPathState(2);
                     }
                 }
                 break;
 
             case 2:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
 
                 if (!robot.follower.isBusy()) {
 
+                    robot.transferMotor.setPower(0);
+                    robot.intakeMotor.setPower(0);
                     robot.follower.followPath(ShootPPG, false);
+                    robot.ballStop.setPosition(BALL_STOP_OPEN);
+                    robot.ballAlto.setPosition(BALL_ALTO_OPEN);// Open
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
-                    boolean backToShooter =
-                            (alliance == Alliance.RED  && x < 84) ||
-                                    (alliance == Alliance.BLUE && x > 67);
 
-                    if (backToShooter) {
+                    if ((alliance == Alliance.RED  && x < 80) || (alliance == Alliance.BLUE && x > 58)) {
 
-                        robot.ballStop.setPosition(0);
-                        robot.ballAlto.setPosition(0.4);  // Open
-                        robot.ballUp.setPower(BALL_UP_UP);
-                        robot.transferMotor.setPower(-0.8);
+
+                        robot.ballUp.setPower(0.8);
+                        robot.transferMotor.setPower(-0.6);
                         robot.intakeMotor.setPower(1);
 
-                        if (!robot.isDetected()) {
+                        if (!robot.isBallDetected()) {
                             if (!asistenciaDelayActive) {
                                 asistenciaDelayActive = true;
                                 asistenciaDelayTimer.reset();
                             }
-                            if (asistenciaDelayTimer.seconds() >= 4) {
-                                robot.asistencia.setPosition(ASSIST_UP);
+                            if (asistenciaDelayTimer.seconds() >= 1.5) {
+                                robot.asistencia.setPosition(1);
+
+                            }
+                            if (asistenciaDelayTimer.seconds() >= 2) {
+                                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                                robot.asistencia.setPosition(ASSIST_DOWN);
                                 setPathState(3);
                             }
                         } else {
@@ -367,63 +386,62 @@ public class AutoHuman extends OpMode {
                 break;
 
             case 3:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.asistencia.setPosition(ASSIST_DOWN);
-                robot.ballStop.setPosition(0.4);
-                robot.ballAlto.setPosition(0);
-                robot.follower.setMaxPower(1);
                 robot.turret.aimingLimelight = false;
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                robot.follower.setMaxPower(1);
+
+                if(!pathActivation){
+                    robot.luz.setPosition(0.5);
+                    robot.follower.followPath(GrabHuman, true);
+                    pathActivation = true;
+                }
+
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(GrabHuman, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
-
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean reachedSecondStack =
-                            (alliance == Alliance.RED  && x > 133) ||
-                                    (alliance == Alliance.BLUE && x < 11);
-
-                    if (reachedSecondStack) {
+                    if ((alliance == Alliance.RED  && x > 131) || (alliance == Alliance.BLUE && x < 6)) {
+                        pathActivation = false;
                         setPathState(4);
                     }
                 }
                 break;
 
             case 4:
-                if (!robot.follower.isBusy()) {
+                if(!pathActivation) {
                     robot.follower.followPath(BackHuman, true);
-                    setPathState(5);
+                    pathActivation = false;
+                    setPathState(4);
                 }
                 break;
 
             case 5:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.asistencia.setPosition(ASSIST_DOWN);
-                robot.ballStop.setPosition(0.4);
-                robot.ballAlto.setPosition(0);
-                robot.follower.setMaxPower(1);
                 robot.turret.aimingLimelight = false;
+                robot.follower.setMaxPower(1);
+
+                if(!pathActivation){
+                    robot.follower.followPath(GrabHuman2, true);
+                    pathActivation = true;
+                }
+
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(GrabHuman2, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
-
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean reachedSecondStack =
-                            (alliance == Alliance.RED  && x > 133) ||
-                                    (alliance == Alliance.BLUE && x < 11);
-
-                    if (reachedSecondStack) {
+                    if ((alliance == Alliance.RED  && x > 131) || (alliance == Alliance.BLUE && x < 6)) {
+                        pathActivation = false;
                         setPathState(6);
                     }
                 }
@@ -431,39 +449,40 @@ public class AutoHuman extends OpMode {
 
 
             case 6:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
 
                 if (!robot.follower.isBusy()) {
 
+                    robot.transferMotor.setPower(0);
+                    robot.intakeMotor.setPower(0);
                     robot.follower.followPath(ShootHuman, false);
+                    robot.ballStop.setPosition(BALL_STOP_OPEN);
+                    robot.ballAlto.setPosition(BALL_ALTO_OPEN);// Open
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
-                    boolean backToShooter =
-                            (alliance == Alliance.RED  && x < 82) ||
-                                    (alliance == Alliance.BLUE && x > 67);
 
-                    if (backToShooter) {
+                    if ((alliance == Alliance.RED  && x < 80) || (alliance == Alliance.BLUE && x > 58)) {
 
-                        robot.ballStop.setPosition(0);
-                        robot.ballAlto.setPosition(0.4);  // Open
-                        robot.ballUp.setPower(BALL_UP_UP);
-                        robot.transferMotor.setPower(-0.8);
+
+                        robot.ballUp.setPower(0.8);
+                        robot.transferMotor.setPower(-0.6);
                         robot.intakeMotor.setPower(1);
 
-                        if (!robot.isDetected()) {
+                        if (!robot.isBallDetected()) {
                             if (!asistenciaDelayActive) {
                                 asistenciaDelayActive = true;
                                 asistenciaDelayTimer.reset();
                             }
-                            if (asistenciaDelayTimer.seconds() >= 4) {
-                                robot.asistencia.setPosition(ASSIST_UP);
+                            if (asistenciaDelayTimer.seconds() >= 1.5) {
+                                robot.asistencia.setPosition(1);
+
+                            }
+                            if (asistenciaDelayTimer.seconds() >= 2) {
+                                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                                robot.asistencia.setPosition(ASSIST_DOWN);
                                 setPathState(7);
                             }
                         } else {
@@ -474,9 +493,9 @@ public class AutoHuman extends OpMode {
                 break;
 
             case 7:
-                if (!robot.follower.isBusy()) {
+                if(!pathActivation){
                     robot.follower.followPath(LeavePos, true);
-                    setPathState(8);
+                    pathActivation=true;
                 }
                 break;
 

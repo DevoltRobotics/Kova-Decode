@@ -218,7 +218,7 @@ public class AutonomousFar extends OpMode {
                     robot.ballUp.setPower(BALL_UP_UP);
                     robot.transferMotor.setPower(-0.8);
                     robot.intakeMotor.setPower(1);
-                    if (!robot.isDetected()) {
+                    if (!robot.isBallDetected()) {
 
                         if (!asistenciaDelayActive) {
                             asistenciaDelayActive = true;
@@ -284,7 +284,7 @@ public class AutonomousFar extends OpMode {
                         robot.transferMotor.setPower(-0.8);
                         robot.intakeMotor.setPower(1);
 
-                        if (!robot.isDetected()) {
+                        if (!robot.isBallDetected()) {
                             if (!asistenciaDelayActive) {
                                 asistenciaDelayActive = true;
                                 asistenciaDelayTimer.reset();
@@ -350,7 +350,7 @@ public class AutonomousFar extends OpMode {
                         robot.intakeMotor.setPower(0.8);
                         robot.ballUp.setPower(BALL_UP_UP);
 
-                        if (!robot.isDetected()) {
+                        if (!robot.isBallDetected()) {
                             if (!asistenciaDelayActive) {
                                 asistenciaDelayActive = true;
                                 asistenciaDelayTimer.reset();

@@ -2,10 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
-import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_CLOSE;
-import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_OPEN;
-import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
-import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_UP_UP;
 
@@ -78,11 +74,11 @@ public abstract class KovaCoquett extends OpMode {
         intakeCmd.autoShoot = gamepad2.a;
         intakeCmd.autoShootJustPressed = gamepad2.aWasPressed();
         intakeCmd.autoShootFeedOverride = gamepad2.right_bumper;
-        intakeCmd.manualIntakeForward = gamepad1.a; //Out
-        intakeCmd.manualIntakeReverse = gamepad1.b; //In
+        intakeCmd.manualIntakeForward = gamepad1.right_bumper; //Out
+        intakeCmd.manualIntakeReverse = gamepad1.left_bumper; //In
         intakeCmd.manualIndexerUp = gamepad2.dpad_up;
         intakeCmd.autoBlockEnabled = (!gamepad2.a || !gamepad2.left_bumper);
-        intakeCmd.shooterClearing = gamepad1.left_bumper;
+        intakeCmd.shooterClearing = gamepad1.left_trigger > 0.1;
 
         robot.intake.update(intakeCmd);
 
@@ -92,24 +88,24 @@ public abstract class KovaCoquett extends OpMode {
             robot.transferMotor.setPower(-0.8);
             robot.intakeMotor.setPower(1.0);
         }
-
+//CAMBIAR POSISIONES DE X^2
         if (gamepad2.right_trigger > 0.1) {
-            robot.ballStop.setPosition(0);
-            robot.ballAlto.setPosition(0.4);
             intakeTimer.reset();
+            robot.ballAlto.setPosition(0.7);
+            robot.ballStop.setPosition(0.1); //open
             intakeOn = true;
             closed = false;
             closedTimer.reset();
         } else if (gamepad2.left_bumper) {
-            robot.ballStop.setPosition(0);
-            robot.ballAlto.setPosition(0.4);
+            robot.ballStop.setPosition(0.1);
+            robot.ballAlto.setPosition(0.7); //open
             intakeOn = false;
             closed = false;
             closedTimer.reset();
-        } else if (gamepad1.a) {
+        } else if (gamepad1.right_bumper) {
             intakeTimer.reset();
-            robot.ballStop.setPosition(0.4);
-            robot.ballAlto.setPosition(0);
+            robot.ballStop.setPosition(0.5);
+            robot.ballAlto.setPosition(0.2); //close
             intakeOn = false;
             closed = true;
         } else if (!closed && asistedDown && closedTimer.seconds() > 0.5) {
@@ -212,7 +208,7 @@ public abstract class KovaCoquett extends OpMode {
         telemetry.addData("Sube bolas", robot.intake.getIndexerPosition());
         telemetry.addData("Para bolas", robot.intake.getGatePosition());
         telemetry.addData("Ángulo", Math.toDegrees(robot.follower.getPose().getHeading()));
-        telemetry.addData("Detected", robot.isDetected());
+        telemetry.addData("Detected", robot.isBallDetected());
         telemetry.update();
     }
 }

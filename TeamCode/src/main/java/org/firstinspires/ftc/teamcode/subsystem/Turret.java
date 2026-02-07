@@ -38,7 +38,7 @@ public class Turret {
                 // Define el setpoint del Limelight
                 if (robot.getAllianceTA() <= 0.4) {
                     if(robot.alliance == Alliance.BLUE) {
-                        llTurretController.setSetPoint(3);
+                        llTurretController.setSetPoint(1);
                     } else {
                         llTurretController.setSetPoint(-1);
                     }

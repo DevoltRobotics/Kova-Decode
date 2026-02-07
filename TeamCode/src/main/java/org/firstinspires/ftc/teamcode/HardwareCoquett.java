@@ -131,7 +131,7 @@ public class HardwareCoquett {
         return null;
     }
 
-    public boolean isDetected() {
+    public boolean isBallDetected() {
         return detected;
     }
 

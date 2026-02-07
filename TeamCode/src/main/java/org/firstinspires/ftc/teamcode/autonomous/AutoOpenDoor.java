@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_CLOSE;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
-import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
-import static org.firstinspires.ftc.teamcode.Const.BALL_UP_UP;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -34,11 +34,11 @@ public class AutoOpenDoor extends OpMode {
     public static PathChain GrabPGP;
     public static PathChain ShootPGP;
     public static PathChain OpenDoor;
+    public static PathChain GrabDoor;
     public static PathChain ShootDoor;
-    public static PathChain OpenDoor2;
-    public static PathChain ShootDoor2;
     public static PathChain GrabGPP;
     public static PathChain ShootGPP;
+    boolean pathActivation;
     private final ElapsedTime autoTime = new ElapsedTime();
     private final ElapsedTime stateTime = new ElapsedTime();
 
@@ -74,9 +74,9 @@ public class AutoOpenDoor extends OpMode {
 
         robot.init(hardwareMap);
         if (alliance == Alliance.BLUE) {
-            robot.follower.setStartingPose(new Pose(56, 8, Math.toRadians(90)));
+            robot.follower.setStartingPose(new Pose(21, 123, Math.toRadians(143)));
         } else {
-            robot.follower.setStartingPose(new Pose(88, 8, Math.toRadians(90)));
+            robot.follower.setStartingPose(new Pose(123, 123, Math.toRadians(37)));
         }
 
         paths = new Paths(robot.follower, alliance);
@@ -138,41 +138,32 @@ public class AutoOpenDoor extends OpMode {
                                 new BezierLine(
                                         new Pose(49.000, 94.000),
 
-                                        new Pose(12.000, 61.000)
+                                        new Pose(15.000, 68.000)
                                 )
-                        ).setLinearHeadingInterpolation(Math.toRadians(143), Math.toRadians(120))
+                        ).setLinearHeadingInterpolation(Math.toRadians(143), Math.toRadians(90))
+
+                        .build();
+
+                GrabDoor = follower.pathBuilder().addPath(
+                                new BezierCurve(
+                                        new Pose(15.000, 68.000),
+                                        new Pose(25.000, 58.000),
+                                        new Pose(11.500, 57.000)
+                                )
+                        ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(120))
 
                         .build();
 
                 ShootDoor = follower.pathBuilder().addPath(
                                 new BezierCurve(
                                         new Pose(12.000, 61.000),
-                                        new Pose(30.000, 73.000),
+                                        new Pose(26.000, 57.000),
                                         new Pose(49.000, 94.000)
                                 )
                         ).setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(143))
 
                         .build();
-
-                OpenDoor2 = follower.pathBuilder().addPath(
-                                new BezierLine(
-                                        new Pose(49.000, 94.000),
-
-                                        new Pose(12.000, 61.000)
-                                )
-                        ).setLinearHeadingInterpolation(Math.toRadians(143), Math.toRadians(120))
-
-                        .build();
-
-                ShootDoor2 = follower.pathBuilder().addPath(
-                                new BezierCurve(
-                                        new Pose(12.000, 61.000),
-                                        new Pose(30.000, 73.000),
-                                        new Pose(49.000, 94.000)
-                                )
-                        ).setLinearHeadingInterpolation(Math.toRadians(120), Math.toRadians(143))
-
-                        .build();
+                //HACER OTRO PATH PARA ABRIR Y AGARRAR
 
                 GrabGPP = follower.pathBuilder().addPath(
                                 new BezierCurve(
@@ -245,24 +236,7 @@ public class AutoOpenDoor extends OpMode {
 
                     .build();
 
-                OpenDoor2 = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    new Pose(95.000, 94.000),
-                                    new Pose(132.000, 61.000)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(37), Math.toRadians(60))
-
-                    .build();
-
-                ShootDoor2 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    new Pose(132.000, 61.000),
-                                    new Pose(114.000, 73.000),
-                                    new Pose(95.000, 94.000)
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(60), Math.toRadians(37))
-
-                    .build();
+                //AGREGAR OPEN DOOR Y GRAB DOOR
 
                 GrabGPP = follower.pathBuilder().addPath(
                             new BezierCurve(
@@ -291,26 +265,36 @@ public class AutoOpenDoor extends OpMode {
     public int autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                robot.follower.followPath(InitShoot);
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
+                robot.follower.setMaxPower(1);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
+                robot.ballAlto.setPosition(BALL_ALTO_OPEN);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-
-                if (autoTime.seconds() >= 4.0) {
-                    robot.ballUp.setPower(BALL_UP_UP);
+                if(!pathActivation){
+                    robot.follower.followPath(InitShoot);
+                    pathActivation = true;
+                }
+                if (autoTime.seconds() >= 2.5) {
+                    robot.ballUp.setPower(1);
                     robot.transferMotor.setPower(-0.8);
                     robot.intakeMotor.setPower(1);
-                    if (!robot.isDetected()) {
+                    if (!robot.isBallDetected()) {
 
                         if (!asistenciaDelayActive) {
                             asistenciaDelayActive = true;
                             asistenciaDelayTimer.reset();
                         }
 
-                        if (asistenciaDelayTimer.seconds() >= 3) {
+                        if (asistenciaDelayTimer.seconds() >= 1.0) {
                             robot.asistencia.setPosition(ASSIST_UP);
+
+                        }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
                             setPathState(1);
+                            robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                            robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                            robot.asistencia.setPosition(ASSIST_DOWN);
                         }
                     } else {
                         asistenciaDelayActive = false;
@@ -319,283 +303,246 @@ public class AutoOpenDoor extends OpMode {
                 break;
 
             case 1:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballStop.setPosition(0.4);
-                robot.ballAlto.setPosition(0);
                 robot.follower.setMaxPower(1);
-                robot.turret.aimingLimelight = false;
-
+                pathActivation = false;
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
                     robot.follower.followPath(GrabPGP, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean reachedStack = (alliance == Alliance.RED  && x > 132) || (alliance == Alliance.BLUE && x < 12);
-
-                    if (reachedStack) {
+                    if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 12)) {
                         setPathState(2);
                     }
                 }
                 break;
 
+
             case 2:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
+                robot.follower.setMaxPower(1);
+                robot.ballStop.setPosition(BALL_STOP_OPEN);
+                robot.ballAlto.setPosition(BALL_ALTO_OPEN);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
-
-                if (!robot.follower.isBusy()) {
-
-                    robot.follower.followPath(ShootPGP, false);
-                    robot.follower.setMaxPower(1);
-
-                    double x = robot.follower.getPose().getX();
-                    boolean backToShooter =
-                            (alliance == Alliance.RED  && x < 96) ||
-                                    (alliance == Alliance.BLUE && x > 48);
-
-                    if (backToShooter) {
-
-                        robot.ballStop.setPosition(0);
-                        robot.ballAlto.setPosition(0.4);  // Open
-                        robot.ballUp.setPower(BALL_UP_UP);
-                        robot.transferMotor.setPower(-0.8);
-                        robot.intakeMotor.setPower(1);
-
-                        if (!robot.isDetected()) {
-                            if (!asistenciaDelayActive) {
-                                asistenciaDelayActive = true;
-                                asistenciaDelayTimer.reset();
-                            }
-                            if (asistenciaDelayTimer.seconds() >= 4) {
-                                robot.asistencia.setPosition(ASSIST_UP);
-                                setPathState(3);
-                            }
-                        } else {
-                            asistenciaDelayActive = false;
-                        }
-                    }
+                if(!pathActivation){
+                    robot.follower.followPath(ShootPGP);
+                    pathActivation = true;
                 }
-                break;
-
-            case 3:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.asistencia.setPosition(ASSIST_DOWN);
-                robot.ballStop.setPosition(0.4);
-                robot.ballAlto.setPosition(0);
-                robot.follower.setMaxPower(1);
-                robot.turret.aimingLimelight = false;
-                if (!robot.follower.isBusy()) {
-                    robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
+                if (autoTime.seconds() >= 2.5) {
+                    robot.ballUp.setPower(1);
+                    robot.transferMotor.setPower(-0.8);
                     robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(OpenDoor, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
-                    robot.turret.aimingLimelight = false;
+                    if (!robot.isBallDetected()) {
 
+                        if (!asistenciaDelayActive) {
+                            asistenciaDelayActive = true;
+                            asistenciaDelayTimer.reset();
+                        }
 
-                    double x = robot.follower.getPose().getX();
-                    boolean reachedSecondStack =
-                            (alliance == Alliance.RED  && x > 131) ||
-                                    (alliance == Alliance.BLUE && x < 11);
+                        if (asistenciaDelayTimer.seconds() >= 1.0) {
+                            robot.asistencia.setPosition(ASSIST_UP);
 
-                    if (reachedSecondStack) {
-                        setPathState(4);
+                        }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
+                            setPathState(3);
+                            robot.ballAlto.setPosition(0);
+                            robot.ballStop.setPosition(0.4);
+                        }
+                    } else {
+                        asistenciaDelayActive = false;
                     }
                 }
                 break;
+
+            case 3: if (!robot.follower.isBusy()) {
+                robot.follower.followPath(OpenDoor, true);
+                robot.follower.setMaxPower(1);
+                setPathState(4);
+            }
+                break;
+
 
             case 4:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
-                robot.shooter.aimingLimelight = true;
-                robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
-
+                robot.follower.setMaxPower(1);
+                pathActivation = false;
+                robot.ballAlto.setPosition(0);
+                robot.ballStop.setPosition(0.4);
                 if (!robot.follower.isBusy()) {
-
-                    robot.follower.followPath(ShootDoor, false);
-                    robot.follower.setMaxPower(1);
+                    robot.asistencia.setPosition(ASSIST_DOWN);
+                    robot.follower.followPath(GrabDoor, true);
+                    robot.ballUp.setPower(-1);
+                    robot.turret.aimingLimelight = false;
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean backToShooter =
-                            (alliance == Alliance.RED  && x < 96) ||
-                                    (alliance == Alliance.BLUE && x > 48);
-
-                    if (backToShooter) {
-
-                        robot.ballStop.setPosition(0);
-                        robot.ballAlto.setPosition(0.4);  // Open
-                        robot.ballUp.setPower(BALL_UP_UP);
-                        robot.transferMotor.setPower(-0.8);
-                        robot.intakeMotor.setPower(1);
-
-                        if (!robot.isDetected()) {
-                            if (!asistenciaDelayActive) {
-                                asistenciaDelayActive = true;
-                                asistenciaDelayTimer.reset();
-                            }
-                            if (asistenciaDelayTimer.seconds() >= 4) {
-                                robot.asistencia.setPosition(ASSIST_UP);
-                                setPathState(5);
-                            }
-                        } else {
-                            asistenciaDelayActive = false;
-                        }
+                    if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 12.5)) {
+                        setPathState(5);
                     }
                 }
                 break;
 
             case 5:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.asistencia.setPosition(ASSIST_DOWN);
-                robot.ballStop.setPosition(0.4);
-                robot.ballAlto.setPosition(0);
                 robot.follower.setMaxPower(1);
-                robot.turret.aimingLimelight = false;
-                if (!robot.follower.isBusy()) {
-                    robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(OpenDoor2, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
-                    robot.turret.aimingLimelight = false;
-
-
-                    double x = robot.follower.getPose().getX();
-                    boolean reachedSecondStack =
-                            (alliance == Alliance.RED  && x > 131) ||
-                                    (alliance == Alliance.BLUE && x < 11);
-
-                    if (reachedSecondStack) {
-                        setPathState(6);
-                    }
-                }
-                break;
-
-
-            case 6:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
+                robot.ballAlto.setPosition(0.4);
+                robot.ballStop.setPosition(0);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
+                if(!pathActivation){
+                    robot.follower.followPath(ShootDoor);
+                    pathActivation = true;
+                }
+                if (autoTime.seconds() >= 2.5) {
+                    robot.ballUp.setPower(1);
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(1);
+                    if (!robot.isBallDetected()) {
 
-                if (!robot.follower.isBusy()) {
-
-                    robot.follower.followPath(ShootDoor2, false);
-                    robot.follower.setMaxPower(1);
-
-                    double x = robot.follower.getPose().getX();
-                    boolean backToShooter =
-                            (alliance == Alliance.RED  && x < 94) ||
-                                    (alliance == Alliance.BLUE && x > 48);
-
-                    if (backToShooter) {
-
-                        robot.ballStop.setPosition(0);
-                        robot.ballAlto.setPosition(0.4);  // Open
-                        robot.ballUp.setPower(BALL_UP_UP);
-                        robot.transferMotor.setPower(-0.8);
-                        robot.intakeMotor.setPower(1);
-
-                        if (!robot.isDetected()) {
-                            if (!asistenciaDelayActive) {
-                                asistenciaDelayActive = true;
-                                asistenciaDelayTimer.reset();
-                            }
-                            if (asistenciaDelayTimer.seconds() >= 4) {
-                                robot.asistencia.setPosition(ASSIST_UP);
-                                setPathState(7);
-                            }
-                        } else {
-                            asistenciaDelayActive = false;
+                        if (!asistenciaDelayActive) {
+                            asistenciaDelayActive = true;
+                            asistenciaDelayTimer.reset();
                         }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.0) {
+                            robot.asistencia.setPosition(ASSIST_UP);
+
+                        }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
+                            setPathState(6);
+                            robot.ballAlto.setPosition(0);
+                            robot.ballStop.setPosition(0.4);
+                        }
+                    } else {
+                        asistenciaDelayActive = false;
                     }
                 }
                 break;
 
+            case 6:
+                if (!robot.follower.isBusy()) {
+                    robot.follower.followPath(OpenDoor, true);
+                    robot.follower.setMaxPower(1);
+                    setPathState(7);
+                }
+                break;
+
+
             case 7:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.asistencia.setPosition(ASSIST_DOWN);
-                robot.ballStop.setPosition(0.4);
-                robot.ballAlto.setPosition(0);
                 robot.follower.setMaxPower(1);
-                robot.turret.aimingLimelight = false;
+                pathActivation = false;
+                robot.ballAlto.setPosition(0);
+                robot.ballStop.setPosition(0.4);
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(GrabGPP, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.follower.followPath(GrabDoor, true);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
-
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean reachedSecondStack =
-                            (alliance == Alliance.RED  && x > 128) ||
-                                    (alliance == Alliance.BLUE && x < 14);
-
-                    if (reachedSecondStack) {
+                    if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 12.5)) {
                         setPathState(8);
                     }
                 }
                 break;
 
             case 8:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
+                robot.follower.setMaxPower(1);
+                robot.ballAlto.setPosition(0.4);
+                robot.ballStop.setPosition(0);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(0);
-                robot.ballAlto.setPosition(0.4);
+                if(!pathActivation){
+                    robot.follower.followPath(ShootDoor);
+                    pathActivation = true;
+                }
+                if (autoTime.seconds() >= 2.5) {
+                    robot.ballUp.setPower(1);
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(1);
+                    if (!robot.isBallDetected()) {
 
+                        if (!asistenciaDelayActive) {
+                            asistenciaDelayActive = true;
+                            asistenciaDelayTimer.reset();
+                        }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.0) {
+                            robot.asistencia.setPosition(ASSIST_UP);
+
+                        }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
+                            setPathState(9);
+                            robot.ballAlto.setPosition(0);
+                            robot.ballStop.setPosition(0.4);
+                        }
+                    } else {
+                        asistenciaDelayActive = false;
+                    }
+                }
+                break;
+
+            case 9:
+                robot.follower.setMaxPower(1);
+                pathActivation = false;
+                robot.ballAlto.setPosition(0);
+                robot.ballStop.setPosition(0.4);
                 if (!robot.follower.isBusy()) {
-
-                    robot.follower.followPath(ShootGPP, false);
-                    robot.follower.setMaxPower(1);
+                    robot.asistencia.setPosition(ASSIST_DOWN);
+                    robot.follower.followPath(GrabGPP, true);
+                    robot.ballUp.setPower(-1);
+                    robot.turret.aimingLimelight = false;
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean backToShooter =
-                            (alliance == Alliance.RED  && x < 83) ||
-                                    (alliance == Alliance.BLUE && x > 59);
+                    if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 16)) {
+                        setPathState(10);
+                    }
+                }
+                break;
 
-                    if (backToShooter) {
+            case 10:
+                robot.follower.setMaxPower(1);
+                robot.ballAlto.setPosition(0.4);
+                robot.ballStop.setPosition(0);
+                robot.shooter.aimingLimelight = true;
+                robot.turret.aimingLimelight = true;
+                if(!pathActivation){
+                    robot.follower.followPath(ShootGPP);
+                    pathActivation = true;
+                }
+                if (autoTime.seconds() >= 2.5) {
+                    robot.ballUp.setPower(1);
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(1);
+                    if (!robot.isBallDetected()) {
 
-                        robot.ballStop.setPosition(0);
-                        robot.ballAlto.setPosition(0.4);  // Open
-                        robot.ballUp.setPower(BALL_UP_UP);
-                        robot.transferMotor.setPower(-0.8);
-                        robot.intakeMotor.setPower(1);
-
-                        if (!robot.isDetected()) {
-                            if (!asistenciaDelayActive) {
-                                asistenciaDelayActive = true;
-                                asistenciaDelayTimer.reset();
-                            }
-                            if (asistenciaDelayTimer.seconds() >= 4) {
-                                robot.asistencia.setPosition(ASSIST_UP);
-                                setPathState(7);
-                            }
-                        } else {
-                            asistenciaDelayActive = false;
+                        if (!asistenciaDelayActive) {
+                            asistenciaDelayActive = true;
+                            asistenciaDelayTimer.reset();
                         }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.0) {
+                            robot.asistencia.setPosition(ASSIST_UP);
+
+                        }
+
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
+                            robot.ballAlto.setPosition(0);
+                            robot.ballStop.setPosition(0.4);
+                        }
+                    } else {
+                        asistenciaDelayActive = false;
                     }
                 }
                 break;

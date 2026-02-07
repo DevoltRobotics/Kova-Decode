@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Const.ASSIST_UP;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_CLOSE;
+import static org.firstinspires.ftc.teamcode.Const.BALL_ALTO_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_CLOSE;
 import static org.firstinspires.ftc.teamcode.Const.BALL_STOP_OPEN;
 import static org.firstinspires.ftc.teamcode.Const.BALL_UP_DOWN;
@@ -65,6 +67,8 @@ public class AutonomousClose extends OpMode {
     public void start() {
         pathState = 0;
         autoTime.reset();
+        robot.shooter.aimingLimelight = true;
+        robot.turret.aimingLimelight = true;
     }
 
     @Override
@@ -83,6 +87,8 @@ public class AutonomousClose extends OpMode {
         pathState = 0;
         panelsTelemetry.debug("Status", "Initialized");
         panelsTelemetry.update(telemetry);
+        robot.ballStop.setPosition(BALL_STOP_OPEN);
+        robot.ballAlto.setPosition(BALL_ALTO_OPEN);
     }
 
     @Override
@@ -95,6 +101,7 @@ public class AutonomousClose extends OpMode {
         panelsTelemetry.debug("Y", robot.follower.getPose().getY());
         panelsTelemetry.debug("Heading", robot.follower.getPose().getHeading());
         panelsTelemetry.debug("State time", stateTime.seconds());
+        panelsTelemetry.debug("Is Busy", robot.follower.isBusy());
             panelsTelemetry.debug("Path", robot.follower.getCurrentPath());
         panelsTelemetry.update(telemetry);
         if(autoTime.seconds()>=29.5){
@@ -132,7 +139,9 @@ public class AutonomousClose extends OpMode {
                 ShootPPG = follower
                         .pathBuilder()
                         .addPath(
-                                new BezierLine(new Pose(23.000, 84.000), new Pose(60.000, 83.000))
+                                new BezierLine(
+                                        new Pose(19.000, 84.000),
+                                        new Pose(60.000, 83.000))
                         )
                         .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(144))
                         .build();
@@ -278,31 +287,38 @@ public class AutonomousClose extends OpMode {
             case 0:
                 robot.follower.setMaxPower(1);
                 robot.ballStop.setPosition(BALL_STOP_OPEN);
-                robot.shooter.aimingLimelight = true;
-                robot.turret.aimingLimelight = true;
+                robot.ballAlto.setPosition(BALL_ALTO_OPEN);
+                robot.ballStop.setPosition(0.1);
+                robot.ballAlto.setPosition(0.7);
+
                 if(!pathActivation){
                     robot.follower.followPath(InitShoot);
                     pathActivation = true;
                 }
                 if (autoTime.seconds() >= 2.5) {
-                    robot.ballUp.setPower(BALL_UP_UP);
-                    robot.transferMotor.setPower(-0.8);
+                    robot.ballUp.setPower(1);
+                    robot.transferMotor.setPower(-0.6);
                     robot.intakeMotor.setPower(1);
-                    if (!robot.isDetected()) {
+
+                    if (!robot.isBallDetected()) {
 
                         if (!asistenciaDelayActive) {
                             asistenciaDelayActive = true;
                             asistenciaDelayTimer.reset();
                         }
 
-                        if (asistenciaDelayTimer.seconds() >= 1.0) {
+                        if (asistenciaDelayTimer.seconds() >= 1.5) {
                             robot.asistencia.setPosition(ASSIST_UP);
 
                         }
 
-                        if (asistenciaDelayTimer.seconds() >= 1.5) {
+                        if (asistenciaDelayTimer.seconds() >= 2) {
+                            pathActivation = false;
                             setPathState(1);
+
                             robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                            robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                            robot.asistencia.setPosition(ASSIST_DOWN);
                         }
                     } else {
                         asistenciaDelayActive = false;
@@ -311,56 +327,67 @@ public class AutonomousClose extends OpMode {
                 break;
 
             case 1:
+                robot.turret.aimingLimelight = false;
                 robot.follower.setMaxPower(1);
-                pathActivation = false;
+
                 robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+
+                if(!pathActivation){
+                    robot.follower.followPath(GrabPPG, true);
+                    pathActivation = true;
+                }
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.follower.followPath(GrabPPG, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    if ((alliance == Alliance.RED  && x > 116) || (alliance == Alliance.BLUE && x < 25)) {
+                    if ((alliance == Alliance.RED  && x > 122) || (alliance == Alliance.BLUE && x < 24)) {
+                        pathActivation = true;
                         setPathState(2);
                     }
                 }
                 break;
 
             case 2:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(BALL_STOP_OPEN);
 
                 if (!robot.follower.isBusy()) {
 
+                    robot.transferMotor.setPower(0);
+                    robot.intakeMotor.setPower(0);
                     robot.follower.followPath(ShootPPG, false);
+                    robot.ballStop.setPosition(BALL_STOP_OPEN);
+                    robot.ballAlto.setPosition(BALL_ALTO_OPEN);// Open
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
 
-                    if ((alliance == Alliance.RED  && x < 85) || (alliance == Alliance.BLUE && x > 58)) {
-                        robot.transferMotor.setPower(-0.8);
+                    if ((alliance == Alliance.RED  && x < 86) || (alliance == Alliance.BLUE && x > 58)) {
+
+
+                        robot.ballUp.setPower(0.8);
+                        robot.transferMotor.setPower(-0.6);
                         robot.intakeMotor.setPower(1);
-                        robot.ballUp.setPower(BALL_UP_UP);
 
-                        if (!robot.isDetected()) {
-                            if (asistenciaDelayTimer.seconds() >= 1.5) {
-                                if (!asistenciaDelayActive) {
-                                    asistenciaDelayActive = true;
-                                    asistenciaDelayTimer.reset();
-                                }
-                                robot.asistencia.setPosition(ASSIST_UP);
-
+                        if (!robot.isBallDetected()) {
+                            if (!asistenciaDelayActive) {
+                                asistenciaDelayActive = true;
+                                asistenciaDelayTimer.reset();
                             }
                             if (asistenciaDelayTimer.seconds() >= 1.5) {
-                                setPathState(3);
+                                robot.asistencia.setPosition(1);
+
+                            }
+                            if (asistenciaDelayTimer.seconds() >= 2) {
                                 robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                                robot.asistencia.setPosition(ASSIST_DOWN);
+                                setPathState(3);
                             }
                         } else {
                             asistenciaDelayActive = false;
@@ -368,62 +395,69 @@ public class AutonomousClose extends OpMode {
                     }
                 }
                 break;
-
             case 3:
-                robot.follower.setMaxPower(1);
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
-                pathActivation = false;
+                robot.turret.aimingLimelight = false;
                 robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                robot.follower.setMaxPower(1);
+
+                if(!pathActivation){
+                    robot.luz.setPosition(0.5);
+                    robot.follower.followPath(GrabPGP, true);
+                    pathActivation = true;
+                }
+
                 if (!robot.follower.isBusy()) {
                     robot.asistencia.setPosition(ASSIST_DOWN);
-                    robot.transferMotor.setPower(-1);
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(GrabPGP, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    boolean reachedSecondStack = (alliance == Alliance.RED  && x > 118) || (alliance == Alliance.BLUE && x < 19);
-                    if (reachedSecondStack) {
+                    if ((alliance == Alliance.RED  && x > 131) || (alliance == Alliance.BLUE && x < 17)) {
+                        pathActivation = false;
                         setPathState(4);
                     }
                 }
                 break;
 
             case 4:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
-                robot.ballStop.setPosition(BALL_STOP_OPEN);
 
                 if (!robot.follower.isBusy()) {
 
+                    robot.transferMotor.setPower(0);
+                    robot.intakeMotor.setPower(0);
                     robot.follower.followPath(ShootPGP, false);
+                    robot.ballStop.setPosition(BALL_STOP_OPEN);
+                    robot.ballAlto.setPosition(BALL_ALTO_OPEN);// Open
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
 
                     if ((alliance == Alliance.RED  && x < 84) || (alliance == Alliance.BLUE && x > 58)) {
-                        robot.transferMotor.setPower(-1);
-                        robot.intakeMotor.setPower(0.8);
-                        robot.ballUp.setPower(BALL_UP_UP);
 
-                        if (!robot.isDetected()) {
-                            if (asistenciaDelayTimer.seconds() >= 1) {
-                                if (!asistenciaDelayActive) {
-                                    asistenciaDelayActive = true;
-                                    asistenciaDelayTimer.reset();
-                                }
-                                robot.asistencia.setPosition(ASSIST_UP);
 
+                        robot.ballUp.setPower(0.8);
+                        robot.transferMotor.setPower(-0.6);
+                        robot.intakeMotor.setPower(1);
+
+                        if (!robot.isBallDetected()) {
+                            if (!asistenciaDelayActive) {
+                                asistenciaDelayActive = true;
+                                asistenciaDelayTimer.reset();
                             }
                             if (asistenciaDelayTimer.seconds() >= 1.5) {
-                                setPathState(7);
+                                robot.asistencia.setPosition(1);
+
+                            }
+                            if (asistenciaDelayTimer.seconds() >= 2) {
                                 robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                                robot.asistencia.setPosition(ASSIST_DOWN);
+                                setPathState(5);
                             }
                         } else {
                             asistenciaDelayActive = false;
@@ -431,56 +465,67 @@ public class AutonomousClose extends OpMode {
                     }
                 }
                 break;
-                //Refactor ends here, Exito Andrea ToDo: Test and adjust
-            case 5:
+                case 5:
+                robot.turret.aimingLimelight = false;
                 robot.follower.setMaxPower(1);
-                robot.transferMotor.setPower(-1);
-                robot.intakeMotor.setPower(1);
+
+                if(!pathActivation){
+                    robot.follower.followPath(GrabGPP, true);
+                    pathActivation = true;
+                }
+
+                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
 
                 if (!robot.follower.isBusy()) {
-                    robot.asistencia.setPosition(0.5);
-                    robot.transferMotor.setPower(-1);
-                    robot.ballUp.setPower(0);
-                    robot.intakeMotor.setPower(1);
-                    robot.follower.followPath(GrabGPP, true);
-                    robot.ballUp.setPower(BALL_UP_DOWN);
+                    robot.asistencia.setPosition(ASSIST_DOWN);
+                    robot.ballUp.setPower(-1);
                     robot.turret.aimingLimelight = false;
+                    robot.transferMotor.setPower(-0.8);
+                    robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    if ((alliance == Alliance.RED  && x > 118) || (alliance == Alliance.BLUE && x < 19)) {
+                    if ((alliance == Alliance.RED  && x > 131) || (alliance == Alliance.BLUE && x < 20)) {
+                        pathActivation = false;
                         setPathState(6);
                     }
                 }
                 break;
             case 6:
-                robot.transferMotor.setPower(0);
-                robot.intakeMotor.setPower(0);
-                robot.ballUp.setPower(0);
-                robot.ballStop.setPosition(BALL_STOP_OPEN);
                 robot.shooter.aimingLimelight = true;
                 robot.turret.aimingLimelight = true;
+
                 if (!robot.follower.isBusy()) {
-                    robot.follower.followPath(ShootGPP, true);
-                    robot.intake.stopIntake();
+
+                    robot.transferMotor.setPower(0);
+                    robot.intakeMotor.setPower(0);
+                    robot.follower.followPath(ShootGPP, false);
+                    robot.ballStop.setPosition(BALL_STOP_OPEN);
+                    robot.ballAlto.setPosition(BALL_ALTO_OPEN);// Open
                     robot.follower.setMaxPower(1);
 
                     double x = robot.follower.getPose().getX();
-                    if ((alliance == Alliance.RED  && x < 85) || (alliance == Alliance.BLUE && x < 58)) {
 
-                        robot.ballStop.setPosition(0.3);  // Open
+                    if ((alliance == Alliance.RED  && x < 84) || (alliance == Alliance.BLUE && x > 65)) {
+
+
                         robot.ballUp.setPower(0.8);
-                        robot.transferMotor.setPower(-1);
+                        robot.transferMotor.setPower(-0.6);
+                        robot.intakeMotor.setPower(1);
 
-                        if (!robot.isDetected()) {
+                        if (!robot.isBallDetected()) {
                             if (!asistenciaDelayActive) {
                                 asistenciaDelayActive = true;
                                 asistenciaDelayTimer.reset();
                             }
-                            if (asistenciaDelayTimer.seconds() >= 0.6) {
+                            if (asistenciaDelayTimer.seconds() >= 1.5) {
                                 robot.asistencia.setPosition(1);
 
                             }
                             if (asistenciaDelayTimer.seconds() >= 2) {
+                                robot.ballStop.setPosition(BALL_STOP_CLOSE);
+                                robot.ballAlto.setPosition(BALL_ALTO_CLOSE);
+                                robot.asistencia.setPosition(ASSIST_DOWN);
                                 setPathState(7);
                             }
                         } else {
