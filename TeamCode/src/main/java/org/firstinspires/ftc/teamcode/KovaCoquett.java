@@ -88,7 +88,7 @@ public abstract class KovaCoquett extends OpMode {
             robot.transferMotor.setPower(-0.8);
             robot.intakeMotor.setPower(1.0);
         }
-//CAMBIAR POSISIONES DE X^2
+//CAMBIAR POSISIONES DE PARABOLAS
         if (gamepad2.right_trigger > 0.1) {
             intakeTimer.reset();
             robot.ballAlto.setPosition(0.7);
