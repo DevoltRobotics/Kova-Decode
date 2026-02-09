@@ -334,7 +334,7 @@ public class AutoHuman extends OpMode {
                     robot.intakeMotor.setPower(0.5);
 
                     double x = robot.follower.getPose().getX();
-                    if ((alliance == Alliance.RED  && x > 137) || (alliance == Alliance.BLUE && x < 10)) {
+                    if ((alliance == Alliance.RED  && x > 120) || (alliance == Alliance.BLUE && x < 10)) {
                         pathActivation = true;
                         setPathState(2);
                     }

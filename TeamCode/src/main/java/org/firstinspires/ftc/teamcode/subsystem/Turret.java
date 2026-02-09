@@ -13,7 +13,7 @@ public class Turret {
     HardwareCoquett robot;
 
     public static PIDFCoefficients llTurretCoeffs = new PIDFCoefficients(
-            0.012, 0, 0, 0
+            0.018, 0, 0.0001, 0
     );
 
     public static double minPower = 0.04;
@@ -35,15 +35,10 @@ public class Turret {
     public void update() {
         if (aimingLimelight) {
             if (robot.getAllianceTX() != null) {
-                // Define el setpoint del Limelight
-                if (robot.getAllianceTA() <= 0.4) {
-                    if(robot.alliance == Alliance.BLUE) {
-                        llTurretController.setSetPoint(1);
-                    } else {
-                        llTurretController.setSetPoint(-1);
-                    }
+                if (robot.alliance == Alliance.BLUE) {
+                    llTurretController.setSetPoint(3);
                 } else {
-                    llTurretController.setSetPoint(0);
+                    llTurretController.setSetPoint(3);
                 }
 
                 llTurretController.setCoefficients(llTurretCoeffs);

@@ -91,14 +91,14 @@ public abstract class KovaCoquett extends OpMode {
 //CAMBIAR POSISIONES DE PARABOLAS
         if (gamepad2.right_trigger > 0.1) {
             intakeTimer.reset();
-            robot.ballAlto.setPosition(0.7);
+            robot.ballAlto.setPosition(0.6);
             robot.ballStop.setPosition(0.1); //open
             intakeOn = true;
             closed = false;
             closedTimer.reset();
         } else if (gamepad2.left_bumper) {
             robot.ballStop.setPosition(0.1);
-            robot.ballAlto.setPosition(0.7); //open
+            robot.ballAlto.setPosition(0.6); //open
             intakeOn = false;
             closed = false;
             closedTimer.reset();
